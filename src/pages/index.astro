@@ -1,0 +1,55 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { buttonVariants } from "../components/ui/button";
+import Box from "../components/Box.astro";
+---
+
+<BaseLayout
+  title="kotogavr blog"
+  description="I'm an Indie Maker and full-stack developer with-no-matter-how-much of expereince. I build on Ruby on Rails, Web3 / Web2 and everything in between"
+>
+  <div
+    class="fixed z-0 h-[134px] w-[134px] lg:w-[300px] lg:h-[300px] rounded-full bg-red-700 blur-[150px] md:blur-[350px] opacity-50 left-0 top-0"
+  >
+  </div>
+  <section
+    class="mx-auto flex min-h-screen max-w-[872px] flex-col gap-9 px-10 py-8 md:gap-20 md:py-16"
+  >
+    <div class="flex max-w-[980px] flex-col items-start gap-2">
+      <h1
+        class="text-3xl font-extrabold leading-tight tracking-tighter md:text-4xl"
+      >
+        I'm Anna Gavrilova 👋 <br class="hidden sm:inline" />
+        Welcome to my blog.
+      </h1>
+      <p class="w-auto max-w-[700px] text-lg leading-6 text-muted-foreground">
+        I'm an Indie Maker and full-stack developer with-no-matter-how-much of
+        expereince. I build on Ruby on Rails, Web3 / Web2 and everything in
+        between.
+      </p>
+    </div>
+    <Box />
+    <div class="flex gap-4">
+      <a
+        href="https://ui.shadcn.com"
+        target="_blank"
+        rel="noreferrer"
+        class={buttonVariants()}
+      >
+        Documentation
+      </a>
+      <a
+        href="https://github.com/kotogavr/"
+        target="_blank"
+        rel="noreferrer"
+        class={buttonVariants({ variant: "outline" })}
+      >
+        GitHub
+      </a>
+    </div>
+  </section>
+  <div
+    class="fixed z-0 h-[134px] w-[134px] lg:w-[300px] lg:h-[300px] rounded-full bg-violet-500 blur-[150px] md:blur-[350px] opacity-50 right-0 bottom-0"
+  >
+  </div>
+</BaseLayout>
