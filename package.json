@@ -1,6 +1,6 @@
 {
   "name": "@kotogavr/kotogavr-blog",
-  "version": "23.12.26",
+  "version": "1.0.0",
   "description": "Kotogavr Blog",
   "author": {
     "name": "kotogavr"
@@ -14,14 +14,15 @@
     "start": "astro dev"
   },
   "dependencies": {
-    "@astrojs/mdx": "^2.0.4",
+    "@astrojs/mdx": "^2.0.0-beta.0",
     "@astrojs/react": "^3.0.9",
     "@astrojs/tailwind": "^5.1.0",
     "@radix-ui/react-slot": "^1.0.2",
-    "astro": "^4.1.2",
+    "astro": "^4.0.0-beta.7",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "lucide-react": "^0.309.0",
+    "npm": "^10.3.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "sharp": "^0.33.2",
