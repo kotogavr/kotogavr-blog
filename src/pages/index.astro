@@ -1,5 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+
+import { Separator } from "@/components/ui/separator";
 import { buttonVariants } from "../components/ui/button";
 import BlogBox from "../components/BlogBox.astro";
 import ProjectsBox from "../components/ProjectsBox.astro";
@@ -31,6 +33,49 @@ import ProjectsBox from "../components/ProjectsBox.astro";
       expereince. I build on Ruby on Rails, Web3 / Web2 and everything in
       between.
     </p>
+    <ul role="list" class="flex flex-row gap-2">
+      <li>
+        <a
+          href="https://twitter.com/kotogavr"
+          class="hover:text-neutral-100 cursor-pointer"
+          rel="noreferrer"
+          target="_blank"
+        >
+          X
+          <span class="sr-only">X link</span>
+        </a>
+      </li>
+
+      <li>
+        <Separator orientation="vertical" />
+      </li>
+      <li>
+        <a
+          href="https://bento.me/gxanshu"
+          class="hover:text-neutral-100 cursor-pointer"
+          rel="noreferrer"
+          target="_blank"
+        >
+          GitHub
+          <span class="sr-only">GitHub link</span>
+        </a>
+      </li>
+
+      <li>
+        <Separator orientation="vertical" />
+      </li>
+      <li>
+        <a
+          href="https://rooms.xyz/anngel/greenhouse"
+          class="hover:text-neutral-100 cursor-pointer"
+          rel="noreferrer"
+          target="_blank"
+        >
+          Rooms
+          <span class="sr-only">Rooms link</span>
+        </a>
+      </li>
+    </ul>
   </div>
   <BlogBox />
   <ProjectsBox />
