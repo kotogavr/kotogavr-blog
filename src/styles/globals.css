@@ -90,4 +90,8 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  h1 {
+    @apply text-3xl font-extrabold leading-tight tracking-tighter md:text-4xl
+  }
 }

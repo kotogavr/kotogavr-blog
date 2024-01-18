@@ -20,8 +20,20 @@ const { title, description, ogImage } = Astro.props;
     <div class="relative flex min-h-screen flex-col">
       <Header />
       <main class="flex-auto px-10">
-        <slot />
+        <div
+          class="pointer-events-none fixed z-0 h-[134px] w-[134px] lg:w-[300px] lg:h-[300px] rounded-full bg-red-700 blur-[150px] md:blur-[350px] opacity-50 left-0 top-0"
+        >
+        </div>
+        <section
+          class="mx-auto flex min-h-screen max-w-[872px] flex-col gap-9 px-10 py-8 md:gap-20 md:py-16"
+        >
+          <slot />
+        </section>
       </main>
+      <div
+        class="fixed z-0 h-[134px] w-[134px] lg:w-[300px] lg:h-[300px] rounded-full bg-red-700 blur-[150px] md:blur-[350px] opacity-50 right-0 bottom-0"
+      >
+      </div>
       <Footer />
     </div>
   </body>

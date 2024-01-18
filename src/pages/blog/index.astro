@@ -9,7 +9,20 @@ const allBlogPosts = await getCollection("blog");
 title="kotogavr blog posts"
 description="I'm an Indie Maker and full-stack developer with-no-matter-how-much of expereince. I build on Ruby on Rails, Web3 / Web2 and everything in between">
   <main>
-  <h1 class="text-2xl font-bold text-neutral-100 py-10">Posts</h1>
+    <nav role="navigation">
+      <ul role="list" class="flex flex-row gap-2">
+        <li>
+          <a href="/" class="hover:text-black text-muted-foreground dark:hover:text-neutral-100">Home</a>
+        </li>
+        <li>/</li>
+        <li>
+          <a href="/blog" class="text-black dark:text-white dark:hover:text-neutral-100"
+            >Posts</a
+          >
+        </li>
+      </ul>
+    </nav>
+  <h1 class=" py-10">Posts</h1>
     {
       allBlogPosts.map((post) => (
         <article class="flex flex-col gap-4">
@@ -19,10 +32,10 @@ description="I'm an Indie Maker and full-stack developer with-no-matter-how-much
               href=`blog/${post.slug}`
             >
               <div class="flex w-full items-center justify-between">
-                <h2 class="text-lg  text-muted-foreground group-hover:text-white">{post.data.title}</h2>
+                <h2 class="text-lg text-muted-foreground dark:group-hover:text-white group-hover:text-black">{post.data.title}</h2>
 
-                <div class="flex flex-row items-center gap-4 text-muted-foreground group-hover:text-white">
-                  <p>{post.data.publishDate}</p>
+                <div class="flex flex-row items-center gap-4 text-muted-foreground dark:group-hover:text-white group-hover:text-black">
+                  <p class="text-sm">{post.data.publishDate}</p>
                   <svg
                     width="18"
                     height="18"
@@ -45,7 +58,7 @@ description="I'm an Indie Maker and full-stack developer with-no-matter-how-much
                   </svg>
                 </div>
               </div>
-              <p class="text-muted-foreground group-hover:text-white">{post.data.description}</p>
+              <p class="text-muted-foreground dark:group-hover:text-white group-hover:text-black text-sm">{post.data.description}</p>
             </a>
           </>
         </article>

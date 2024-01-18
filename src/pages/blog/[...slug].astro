@@ -14,10 +14,43 @@ const { Content } = await entry.render();
 ---
 
 <BaseLayout title={entry.data.title} description={entry.data.description}>
-  <h1 class="text-2xl font-bold dark:text-neutral-100 py-10">
-    {entry.data.title}
-  </h1>
-  <article class="prose prose-neutral dark:prose-invert prose-sm md:prose-base">
-    <Content />
-  </article>
+  <main>
+    <nav role="navigation">
+      <ul role="list" class="flex flex-row gap-2">
+        <li>
+          <a
+            href="/"
+            class="hover:text-black text-muted-foreground dark:hover:text-neutral-100"
+            >Home</a
+          >
+        </li>
+        <li>/</li>
+        <li>
+          <a
+            href="/blog"
+            class="hover:text-black text-muted-foreground dark:hover:text-neutral-100"
+            >Posts</a
+          >
+        </li>
+        <li>/</li>
+        <li>
+          <a
+            href=`/blog/${entry.slug}`
+            class="text-black dark:text-white dark:hover:text-neutral-100 truncate"
+            >{entry.slug}</a
+          >
+        </li>
+      </ul>
+    </nav>
+    <div class="md:container md:max-w-3xl">
+      <h1 class="py-10">
+        {entry.data.title}
+      </h1>
+      <article
+        class="prose prose-neutral dark:prose-invert prose-sm md:prose-base"
+      >
+        <Content />
+      </article>
+    </div>
+  </main>
 </BaseLayout>

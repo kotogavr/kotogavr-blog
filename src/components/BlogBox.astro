@@ -22,7 +22,7 @@ const allBlogPosts = await getCollection("blog");
     {
       allBlogPosts.map((post) => (
         <a
-          class="group flex max-w-sm cursor-pointer flex-col gap-2 rounded-md border border-neutral-700 p-4 transition-all duration-300 hover:-translate-y-2 hover:border-neutral-400"
+          class="group flex max-w-sm cursor-pointer flex-col gap-2 rounded-md border dark:border-neutral-700 border-neutral-300 p-4 transition-all duration-300 hover:-translate-y-2 hover:border-neutral-700 dark:hover:border-neutral-400"
           href={`/blog/${post.slug}`}
         >
           <div class="flex flex-col justify-between gap-2 md:flex-row md:items-center">
