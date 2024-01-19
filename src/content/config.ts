@@ -1,12 +1,13 @@
 // 1. Import utilities from `astro:content`
 import { z, reference, defineCollection } from "astro:content";
 // 2. Define your collection(s)
+const Tags = z.enum(["Ruby on Rails", "indie making", "Tag3"]);
 const blogCollection = defineCollection({
   type: "content",
   schema: z.object({
     title: z.string(),
     description: z.string(),
-    tags: z.array(z.string()),
+    tags: z.array(Tags),
     image: z
       .object({
         src: z.string().optional(),
