@@ -1,64 +1,65 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
-import { Badge } from "@/components/ui/badge.tsx";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { Badge } from "@/components/ui/badge.tsx"
 
-const allBlogPosts = await getCollection("blog");
-const tagsSet = new Set();
-allBlogPosts.forEach((post) => {
-  post.data.tags.forEach((tag) => tagsSet.add(tag));
-});
-const uniqueTags = Array.from(tagsSet);
+const blogEntries = await getCollection("blog");
+export async function getStaticPaths() {
+  const blogEntries = await getCollection("blog");
+  const tags = new Set(blogEntries.map((post) => post.data.tags).flat());
+  return [...tags].map((tag) => ({ params: { tag } }));
+}
+
+const { tag } = Astro.params;
+
+const filteredPosts = blogEntries.filter((post) =>
+  post.data.tags.includes(tag)
+);
 ---
 
 <BaseLayout
-  title="kotogavr blog posts"
-  description="I'm an Indie Maker and full-stack developer with-no-matter-how-much of expereince. I build on Ruby on Rails, Web3 / Web2 and everything in between"
->
+title="kotogavr blog posts"
+description="I'm an Indie Maker and full-stack developer with-no-matter-how-much of expereince. I build on Ruby on Rails, Web3 / Web2 and everything in between">
   <main>
     <nav role="navigation">
       <ul role="list" class="flex flex-row gap-2">
         <li>
-          <a
-            href="/"
-            class="hover:text-black text-muted-foreground dark:hover:text-neutral-100"
-            >Home</a
+          <a href="/" class="hover:text-black text-muted-foreground dark:hover:text-neutral-100">Home</a>
+        </li>
+        <li class="text-muted-foreground">/</li>
+        <li>
+          <a href="/blog" class="text-black dark:text-white dark:hover:text-neutral-100"
+            >Posts</a
           >
         </li>
         <li class="text-muted-foreground">/</li>
         <li>
-          <a
-            href="/blog"
-            class="text-black dark:text-white dark:hover:text-neutral-100"
-            >Posts</a
+          <a href="/blog" class="text-black dark:text-white dark:hover:text-neutral-100"
+            >{tag}</a
           >
         </li>
       </ul>
     </nav>
-    <h1 class="py-10">Posts</h1>
-
-    <div class="flex gap-3 py-4">
-      {
-        uniqueTags.map((tag) => (
-          <a href={`/tag/${tag}`}>
-            <Badge>{tag}</Badge>
-          </a>
-        ))
-      }
-    </div>
+  <h1 class=" py-10">Posts</h1>
+<!-- 
+  <div class="flex gap-3 py-4">
+    {uniqueTags.map(tag => (
+      <a href='/'>
+        <Badge>{tag}</Badge>
+        </a>
+        ))}
+        </div> -->
 
     {
-      allBlogPosts.map((post) => (
+      filteredPosts.map((post) => (
         <article class="flex flex-col gap-4">
           <>
             <a
               class="group flex flex-col gap-2 border-t border-neutral-700 py-4 transition-all hover:text-neutral-100"
-              href={`blog/${post.slug}`}
+              href=`/blog/${post.slug}`
             >
               <div class="flex w-full items-center justify-between">
-                <h2 class="text-base md:text-lg text-muted-foreground dark:group-hover:text-white group-hover:text-black max-w-64">
-                  {post.data.title}
-                </h2>
+                <h2 class="text-base md:text-lg text-muted-foreground dark:group-hover:text-white group-hover:text-black max-w-64">{post.data.title}</h2>
                 <div class="flex flex-row items-center gap-4 text-muted-foreground dark:group-hover:text-white group-hover:text-black">
                   <p class="text-xs">{post.data.publishDate}</p>
                   <svg
@@ -83,13 +84,11 @@ const uniqueTags = Array.from(tagsSet);
                   </svg>
                 </div>
               </div>
-
-              <p class="text-muted-foreground dark:group-hover:text-white group-hover:text-black text-sm">
-                {post.data.description}
-              </p>
+              
+              <p class="text-muted-foreground dark:group-hover:text-white group-hover:text-black text-sm">{post.data.description}</p>
               <div>
                 <Badge variant={"outline"}>{post.data.tags}</Badge>
-              </div>
+                </div>
             </a>
           </>
         </article>

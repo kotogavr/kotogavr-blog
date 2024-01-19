@@ -6,7 +6,7 @@ import Header from "../components/Header.astro";
 interface Props {
   title?: string | undefined;
   description?: string | undefined;
-  ogImage?: URL | undefined;
+  ogImage?: string | undefined;
 }
 
 const { title, description, ogImage } = Astro.props;
