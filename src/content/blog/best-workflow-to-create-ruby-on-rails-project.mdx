@@ -1,10 +1,161 @@
 ---
 title: Best workflow to create Ruby on Rails project
-description: In this post I'll show step by step guide to setup Ruby on Rails Project. otice that after executing init_options the content is still the same even if inside there is a statement that would instantiate a new hash. Or take a look at the following code. Let's dig in to find out how Ruby works when talking about passing objects.
+description: How to setup Ruby on Rails project (gems, setup tricks)
 tags: ['Ruby on Rails']
 image: {}
-publishDate: "01/10/2023"
+publishDate: 22/01/2024
 ---
 
-60% of success in any project is a good start. And usually it's the most tricky part.
-In this post I'll show step by step guide to setup Ruby on Rails Project.
+60% of success in any project is a good start. And usually it's the most tricky part, right?
+In this post I'll show step by step guide to setup Ruby on Rails Project, which gems to add and what it is essensial to know about Ruby on Rails.
+
+# Why Ruby on Rails
+
+Ruby on Rails is an amazing batteries included framework with comprehensive ecosystem similar to Laravel. 
+Because Ruby on Rails is ***opinionated*** framework, you will never struggle with choosing which gems to use, how to structure your project and so on.
+The next significant difference is that Ruby on Rails is a ***monolith*** framework. It means that it has everything you need to build a web application.
+It has a built-in ORM, routing, templating engine, authentication, authorization, mailers, background jobs. But it comes with a cost.
+Ruby on Rails don't have type checking, so you should get familiar with ***duck typing 🦆***. It is not as flexible as JS ecosystem.
+
+
+There are things that I potentially love in RoR and why I think it's extremely smart framework:
+
+1. It is **frontend focused**: RoR backend development is really streamlined, enabling developer to focus mostly on crafting user interfaces.
+2. **Built in WebSockets support** via Action Cable, no setup required!
+3. **Built in REST API support** via Active Model Serializers. 
+4. **Convention over configuration** principle when you don't need to deside how to structure your project, where to put your files, how to name them.
+This allows RoR to boilerplate code, quickly scaffold components that follows the most common patterns.
+5. **Gems come with CLI installers** and generators and this is absolutely different experience from JS ecosystem. 
+Instead of going to step by step guide on how to setup a new library, where you need to create new files, add configurations, import new dependences, setup depending libraries 
+your gems come with the all necessary code that will be added to your project upon instllation.
+To setup Ruby on Rails project you need to know which gems to use.
+
+This was just a preambula and some observations. Now let's begin!
+
+# Create new project
+
+We are going to configure our new RoR project using the following gems:
+- rubocop
+- solargraph
+- annotate
+- erb-formatter
+
+And I'll also share some additional gems and setup tricks:
+- auth: authentication-zero
+- social login: omniauth-google-oauth2
+- credentials setup
+- erb alternative: phlex
+- database: litestack
+
+Let's start with creating new project:
+
+```bash
+rails new -c tailwind [my-project] -d postgresql --skip-jbuilder
+```
+
+#### -c
+I prefer to use Tailwind CSS as a CSS framework, so I add `-c tailwind` option to use it out of the box.
+Ofc you can add Tailwind any time later, but this way you will have a designed UI from the very beginning.
+
+#### -d
+You can add PostgreSQL as a database as in example `-d postgresql`. However, I personally prefer to use SQLite3 for production and I will
+explain the reason later when I will cover LiteStack. **SQlite3 database** is default database used when new Ruby on Rails application is created.
+This can be changed with the -d or --database option with allowed values: `mysql`, `oracle`, `postgresql`, `sqlite3`, `frontbase`, `ibm_db`, `sqlserver`, `jdbcmysql`, `jdbcsqlite3`, `jdbcpostgresql`, `jdbc`.
+We'll stick with default database.
+
+
+`--skip-jbuilder` option will skip installation of Jbuilder gem. Jbuilder is a templating engine for JSON, which I personally don't use.
+
+You can also check commands on RoR guides https://guides.rubyonrails.org/command_line.html or simply call  `rails new -h` to see all available options.
+
+## Rubocop
+
+Rubocop is a static code analyzer. It helps to keep your code clean and consistent.
+Add [rubocop gem](https://github.com/rubocop/rubocop) by adding to the Gemfile to the **Development group**:
+```ruby
+gem 'rubocop', require: false
+```
+
+Add [rubocop-rails](https://github.com/rubocop/rubocop-rails) to the Gemfile too: 
+```ruby
+gem 'rubocop-rails', require: false
+```
+After that run bundle command:
+
+```bash
+bundle
+```
+
+To activate rubocop create file named `.rubocop.yml` in the root folder and add this to the top: `require: rubocop-rails`.
+
+For VSCode users install [Ruby LSP](marketplace.visualstudio.com/items?itemname=shopify.ruby-lsp) extension for VSCode to enable Rubocop integration.
+
+## Solargraph
+
+Solargraph is a language server for Ruby. It provides intellisense, code completion, documentation, and many other features.
+By the analogy with Rubocop, add [solargraph](https://github.com/castwide/solargraph) and [solargraph-rails](https://github.com/iftheshoefritz/solargraph-rails/) to your Gemfile to the **Development group**:
+
+```ruby
+gem 'solargraph', require: false
+gem 'solargraph-rails', require: false
+```
+
+For VSCode users install [Ruby Solargraph](https://marketplace.visualstudio.com/items?itemName=castwide.solargraph) extension.
+To activate extention run `solargraph config` to generate .solargraph.yml and add here the following lines to tell you IDE plugin to use solargraph-rails:
+
+```yaml
+plugins:
+  - solargraph-rails
+```
+
+Run bundle command:
+
+```bash
+bundle
+```
+
+## Annotate
+
+Annotate is amazingly helpful to make shemas of the existing models.
+Add [Annotate (aka AnnotateModels)](https://github.com/ctran/annotate_models) to your Gemfile to the **Development group**:
+
+```ruby
+gem 'annotate'
+```
+
+Run this command to generate shemas for all models:
+
+```bash
+annotate --models
+```
+
+>Note❗️ Annotate depends on solargraph and cannot work without it.
+
+Run bundle command:
+
+```bash
+bundle
+```
+
+## Erb formatter
+Erb formatter is a gem that helps to format your erb templates. 
+
+Add erb-formatter to your Gemfile to the **Development group**:
+```ruby
+ gem 'erb-formatter', require: false
+```
+
+Run bundle command:
+
+```bash
+bundle
+``` 
+
+For VSCode users install this [Erb formatter](https://marketplace.visualstudio.com/items?itemName=elia.erb-formatter) extension.
+.erb format is a default templating engine in Ruby on Rails. If you just started with RoR 
+I recommend to stick with erb, because it is a default templating engine and you will find more examples and tutorials on how to use it.
+For more advanced users I recommend alternative called Phlex but we will talk about it later in this post.
+
+This is all for the developer gems. Now let's talk about some additional gems and setup tricks.
+
+# Setting up authentication

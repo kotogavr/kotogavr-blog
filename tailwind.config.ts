@@ -14,6 +14,23 @@ const config = {
       },
     },
     extend: {
+      typography: {
+        DEFAULT: {
+          css: {
+            "code::before": {
+              content: "normal",
+            },
+            "code::after": {
+              content: "normal",
+            },
+            code: {
+              "background-color": "#A390C2",
+              "border-radius": "0.2rem",
+              padding: "0.1rem",
+            },
+          },
+        },
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

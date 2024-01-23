@@ -2,8 +2,11 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
 import { Badge } from "@/components/ui/badge.tsx";
+import { sortBlogPostsByDate } from "@/utils/sortBlogPostsByDate.ts";
 
-const allBlogPosts = await getCollection("blog");
+let allBlogPosts = await getCollection("blog");
+allBlogPosts = sortBlogPostsByDate(allBlogPosts);
+
 const tagsSet = new Set();
 allBlogPosts.forEach((post) => {
   post.data.tags.forEach((tag) => tagsSet.add(tag));

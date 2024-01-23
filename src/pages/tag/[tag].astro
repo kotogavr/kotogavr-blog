@@ -2,8 +2,11 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { Badge } from "@/components/ui/badge.tsx"
+import { sortBlogPostsByDate } from "../../utils/sortBlogPostsByDate.ts";
 
-const blogEntries = await getCollection("blog");
+let blogEntries = await getCollection("blog");
+blogEntries = sortBlogPostsByDate(blogEntries);
+
 export async function getStaticPaths() {
   const blogEntries = await getCollection("blog");
   const tags = new Set(blogEntries.map((post) => post.data.tags).flat());
