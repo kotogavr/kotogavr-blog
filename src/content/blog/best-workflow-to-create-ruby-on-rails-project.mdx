@@ -47,6 +47,8 @@ And I'll also share some additional gems and setup tricks:
 - erb alternative: phlex
 - database: litestack
 
+This post doesn't cover how to setup RoR in Docker image. This is a topic for another post.
+
 Let's start with creating new project:
 
 ```bash
@@ -88,7 +90,8 @@ bundle
 
 To activate rubocop create file named `.rubocop.yml` in the root folder and add this to the top: `require: rubocop-rails`.
 
-For VSCode users install [Ruby LSP](marketplace.visualstudio.com/items?itemname=shopify.ruby-lsp) extension for VSCode to enable Rubocop integration.
+For VSCode users install [Ruby LSP](marketplace.visualstudio.com/items?itemname=shopify.ruby-lsp) extension for VSCode to enable Rubocop integration and this is the only gem that
+highlight your ruby code.
 
 ## Solargraph
 
@@ -159,3 +162,231 @@ For more advanced users I recommend alternative called Phlex but we will talk ab
 This is all for the developer gems. Now let's talk about some additional gems and setup tricks.
 
 # Setting up authentication
+
+There are different approaches to auth users.
+The most common is a email login.
+I personally prefer Google or social login, especially if you built a SaaS where users should not exploit the free trial, social login is a useful thing.
+And also from my personal point of view, it's more safe and convenient to use Google login.
+The resaonable alternative to it can be a paswordless or so-called "magic link" login when you don't create any password and receive
+it by
+ email every time you want to login, 
+but it's a bit more complicated to implement. So I personally stick to Google login.
+
+## Authentication-zero
+
+For this particular task I use 'authentication-zero' gem.
+It is a simple and lightweight gem that allows to login with email, Google, facebook and many other ways. 
+It is a good alternative to Devise gem, which looks for me a bit outdated.
+
+Add [authentication-zero](https://github.com/lazaronixon/authentication-zero)
+
+```ruby
+gem 'authentication-zero'
+```
+Then run command in terminal to setup authentication-zero with [omniauth](https://github.com/omniauth/omniauth) gem: 
+
+
+```ruby
+rails g authentication --omniauthable
+```
+
+Now as we have authentication setup, we need to add Google login.
+For this we need to add [omniauth-google-oauth2](https://github.com/zquestz/omniauth-google-oauth2)
+
+
+```ruby
+gem 'omniauth-google-oauth2'
+```
+
+Don't forget to run bundle command:
+
+```bash
+bundle
+```
+
+Now to setup Google login we need to add credentials to our project.
+
+## Credentials setup
+
+Credentials is a new way to store your secrets in Ruby on Rails.
+There is the most popular and convenient way to store your secrets in Ruby on Rails and it's implemented in the RoR already using master key.
+Firstly you need to run this command in terminal if you use VSCode:
+
+```bash
+EDITOR="code --wait" rails credentials:edit
+```
+
+Your IDE will open a new document that looks like this:
+![credentials in VSCode](https://res.cloudinary.com/practicaldev/image/fetch/s--TQws4Jxo--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_800/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/rulutzf4q1snplq9gxgl.png "credentials in VSCode for RoR")
+
+Instead of aws example we will add our Google credentials:
+
+
+```yml
+google:
+  client_id: blsdjn234wkin46nlose343k676frfg56f3r5gv566n.apps.googleusercontent.com
+  client_secret: GSOKSPX-mjnjhjbnHgvd54F-knh75gffh
+```
+
+Now let's open `config/initializers/omniauth.rb` and add this code:
+
+```ruby
+Rails.application.config.middleware.use(OmniAuth::Builder) do
+  provider :google_oauth2, Rails.application.credentials.dig(:google, :client_id), Rails.application.credentials.dig(:google, :client_secret)
+end
+```
+
+We use `dig` method to get credentials from credentials.yml.enc file. And using 'dig' is better than using `[]` method.
+
+Now we need to add Google login button to our view. Let's add it to the `app/views/layouts/application.html.erb` file:
+
+```erb
+<%= link_to "Sign in with Google", user_google_oauth2_omniauth_authorize_path, method: :post %>
+```
+
+Let's take a look at our routes.
+If you open the routes.rb file, you'll see the following:
+
+```ruby
+Rails.application.routes.draw do
+  get  'sign_in', to: 'sessions#new'
+  post 'sign_in', to: 'sessions#create'
+  get  'sign_up', to: 'registrations#new'
+  post 'sign_up', to: 'registrations#create'
+  resources :sessions, only: [:index, :show, :destroy]
+  resource  :password, only: [:edit, :update]
+  namespace :sessions do
+    resource :sudo, only: [:new, :create]
+  end
+  namespace :identity do
+    resource :email,              only: [:edit, :update]
+    resource :email_verification, only: [:edit, :create]
+    resource :password_reset,     only: [:new, :edit, :create, :update]
+  end
+  namespace :two_factor_authentication do
+    resource :challenge, only: [:new, :create]
+    resource :totp,      only: [:new, :create]
+  end
+  get  '/auth/failure',            to: 'sessions/omniauth#failure'
+  get  '/auth/:provider/callback', to: 'sessions/omniauth#create'
+  post '/auth/:provider/callback', to: 'sessions/omniauth#create'
+  #...
+end
+
+```
+
+The above routes were added by Authentication Zero during the code generation step above.
+
+Now you are pretty done with setup. You can run your project and try to login with Google.
+
+# Run models generator
+
+The first thing that comes after setup is to generate models.
+
+```bash
+rails g model [Comment commenter:string body:text article:references]
+```
+Create scaffolds for CRUD tasks. Notice extra parameter text: string and text(without string) is also string by default
+
+```bash
+rails g scaffold [Tasks text author:references]
+```
+
+# Phlex
+
+Phlex is an alternative to erb templating engine. It is a bit more advanced and has more features than erb.
+It is a good alternative to erb, but I recommend to use it only if you are familiar with erb and want to try something new.
+The main reason why I use Phlex is that it has a better syntax for loops and conditions. Phlex allows
+to write pure Ruby code inside templates, which is not possible with erb.
+
+
+For example, this is how you write a loop in erb:
+
+```erb
+<% @tasks.each do |task| %>
+  <p><%= task.text %></p>
+<% end %>
+```
+
+And this is how you write a loop in Phlex:
+
+```ruby
+@tasks.each do |task|
+  p task.text
+end
+```
+
+To add Phlex to your project add [phlex](https://www.phlex.fun/rails/) to Gemfile:
+```ruby
+gem 'phlex'
+```
+
+Run bundle command:
+
+```bash
+bundle
+```
+
+Once the gem is installed, run the install generator.
+  
+  ```bash
+  rails g phlex:install
+  ```
+
+Now you can rename your `.html.erb` files to `.rb` files and use Phlex instead of erb.
+If you have .erb files in your project, you can use https://phlexing.fun/ to convert erb to rb.
+
+
+# LiteStack
+
+I'm using SQLite in production because my approach is to build Single-Machine Rails applications.
+And LiteStack is a gem that allows to use SQLite in production. [Litestack](https://github.com/oldmoe/litestack) consist of:
+- [LiteDB](https://github.com/oldmoe/litestack?tab=readme-ov-file#usage): an adapter for database
+- [LiteCache](https://github.com/oldmoe/litestack?tab=readme-ov-file#sequel): a caching library that uses SQLite as a backend
+- [LiteCable](https://github.com/oldmoe/litestack?tab=readme-ov-file#actioncable): SQLite as a Pub/Sub adapter for ActionCable
+- [LiteJob](https://github.com/oldmoe/litestack?tab=readme-ov-file#activeresourcecache): a background job processor for ActiveJob
+- [LiteSearch](https://github.com/oldmoe/litestack?tab=readme-ov-file#actioncable): a full-text search engine for LiteDB
+- [LiteMetric](https://github.com/oldmoe/litestack?tab=readme-ov-file#litemetric): a metrics collector for Rails
+- [LiteBoard](https://github.com/oldmoe/litestack?tab=readme-ov-file#liteboard): a simple web server that provides a web interface for the collected metrics
+
+
+As you can see, LiteStack is a full-stack solution for SQLite in production. The point of using Litestack is that you can refuse from using any other tools like:
+- Database Server (e.g. PostgreSQL, MySQL)
+- Cache Server (e.g. Redis, Memcached)
+- Job Processor (e.g. Sidekiq, Goodjob)
+- Pubsub Server (e.g. Redis, PostgreSQL)
+- Fulltext Search Server (e.g. Elasticsearch, Mielisearch)
+
+
+To add **LiteStack** to your project add litestack to Gemfile:
+```ruby
+gem 'litestack'
+```
+
+Run bundle command:
+
+```bash
+bundle
+```
+
+Then run generator to setup LiteStack:
+
+```bash
+rails g litestack:install
+```
+
+Also in database.yml file change adapter:
+
+```yml
+adapter: litedb
+# normal sqlite3 configuration follows
+```
+
+And that's it! 
+
+# Conclusion
+
+In this post I showed you how to setup Ruby on Rails project, which gems to add and what it is essensial to know about Ruby on Rails.
+I didn't cover Docker setup, as well as Litestack, it all requires a separate post.
+But the general idea is that with clean setup you can build good apps with Ruby on Rails.
+Thank you for reading!

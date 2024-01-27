@@ -2,7 +2,7 @@
 import { getCollection } from "astro:content";
 
 const allBlogPosts = await getCollection("blog");
-const lastTwoBlogPosts = allBlogPosts.slice(-2).reverse();
+const lastTwoBlogPosts = allBlogPosts.slice(0, 2).reverse();
 ---
 
 <article class="flex flex-col gap-8">
@@ -23,7 +23,7 @@ const lastTwoBlogPosts = allBlogPosts.slice(-2).reverse();
     {
       lastTwoBlogPosts.map((post) => (
         <a
-          class="group flex max-w-sm cursor-pointer flex-col gap-2 rounded-md border dark:border-neutral-700 border-neutral-300 p-4 transition-all duration-300 hover:-translate-y-2 hover:border-neutral-700 dark:hover:border-neutral-400"
+          class="group flex w-full cursor-pointer flex-col justify-between gap-2 rounded-md border dark:border-neutral-700 border-neutral-300 p-4 transition-all duration-300 hover:-translate-y-2 hover:border-neutral-700 dark:hover:border-neutral-400"
           href={`/blog/${post.slug}`}
         >
           <div class="flex flex-col justify-between gap-2 md:flex-row md:items-center">

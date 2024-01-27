@@ -1,6 +1,10 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
+import { Separator } from "@/components/ui/separator";
+import { buttonVariants } from "@/components/ui/button";
+import { Facebook, Linkedin } from "lucide-react";
+
 export async function getStaticPaths() {
   const blogEntries = await getCollection("blog");
   return blogEntries.map((entry) => ({
@@ -55,6 +59,37 @@ const { Content } = await entry.render();
       >
         <Content />
       </article>
+      <div class="py-6 space-y-8">
+        <Separator />
+        <h2 class="font-bold text-2xl">Share this article</h2>
+        <a
+          class={buttonVariants({ variant: "ghost" }) + " text-2xl"}
+          href=`https://x.com/intent/tweet?text=${entry.data.title} https://kotogavr.vercel.app/blog/${entry.slug}`
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          𝕏
+        </a>
+        <a
+          class={buttonVariants({ variant: "ghost" }) + " text-2xl"}
+          href=`https://www.facebook.com/sharer/sharer.php?u=https://kotogavr.vercel.app/blog/${entry.slug}&quote=`
+          target="_blank"
+          rel="noopener noreferrer"><Facebook /></a
+        >
+        <a
+          class={buttonVariants({ variant: "ghost" }) + " text-2xl"}
+          href=`https://www.linkedin.com/shareArticle/?mini=true&url=https://kotogavr.vercel.app/blog/${entry.slug}&summary=&source=AddToAny`
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Linkedin /></a
+        >
+      </div>
+      <Separator />
+      <div class="py-6 space-y-8">
+        <h2 class="font-bold text-2xl">Related articles</h2>
+        <div>{entry.data.relatedPosts}</div>
+      </div>
     </div>
   </main>
 </BaseLayout>
