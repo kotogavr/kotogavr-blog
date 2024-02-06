@@ -6,7 +6,8 @@
       "extensions": [
         "esbenp.prettier-vscode",
         "GitHub.copilot-chat",
-        "astro-build.astro-vscode"
+        "astro-build.astro-vscode",
+        "unifiedjs.vscode-mdx"
       ]
     }
   },
