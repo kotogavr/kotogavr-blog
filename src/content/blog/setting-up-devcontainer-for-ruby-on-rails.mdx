@@ -1,0 +1,25 @@
+---
+title: Setting up a devcontainer for Ruby on Rails development
+description: Setting up a devcontainer for Ruby on Rails development
+tags: ['Ruby on Rails']
+image: {src: 'setting-up-devcontainer-for-ruby-on-rails.png', alt: 'Setting up a devcontainer for Ruby on Rails development'}
+publishDate: '27/01/2024'
+relatedPosts: ['best-workflow-to-create-ruby-on-rails-project']
+---
+
+## Why to program in containers?
+I think you know how painful and how many unnesasarry files and dependences are installed on your computer when you program on RoR.
+This is so a problem that I even come across on paid services that claims to setup a Ruby in Rails project for you.
+Hopefully, we have a solution for this problem, and it is actually called generally an isolated environment, or a container.
+You may think that containers are only for production or that you are just a begginer and isolated invironment would make thing so 
+difficult that you'd never find a documentation to make your code work in a container. No worries, I thought the same!
+
+## Types of isolated environments
+I think the most popular isolated environment is Docker, right? But it turns out that there are other solutions that are more lightweight, strightforward, not overengineered, and more user-friendly.
+First of all let's understand that there are 2 types of isolated environments: virtual machines(VMs) and containers.
+VMs are more like a computer inside a computer, and containers are more like a process inside a computer.
+The main difference is that VMs have their own kernel, and containers share the kernel with the host machine.
+This means that containers are more lightweight and faster than VMs.
+VMs are used for running different operating systems on the same machine, and containers are used for running different processes on the same operating system.
+So we won't talk about VMs here, indeed we will talk about containers.
+

@@ -4,6 +4,7 @@ import { getCollection } from "astro:content";
 import { Separator } from "@/components/ui/separator";
 import { buttonVariants } from "@/components/ui/button";
 import { Facebook, Linkedin } from "lucide-react";
+import { getEntry, getEntries } from "astro:content";
 
 export async function getStaticPaths() {
   const blogEntries = await getCollection("blog");
@@ -15,6 +16,11 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content } = await entry.render();
+
+const currentBlogPost = await getEntry("blog", entry.slug);
+
+//@ts-ignore
+const relatedPosts = await getEntries(currentBlogPost.data.relatedPosts);
 ---
 
 <BaseLayout
@@ -50,45 +56,67 @@ const { Content } = await entry.render();
         </li>
       </ul>
     </nav>
-    <div class="md:container md:max-w-3xl">
+    <div>
+      <img
+        src=`/src/images/${entry.data.image?.src}`
+        alt={entry.data.image?.alt}
+        class="pt-10 md:max-w-3xl"
+      />
       <h1 class="py-10">
         {entry.data.title}
       </h1>
       <article
-        class="prose prose-neutral dark:prose-invert prose-sm md:prose-base"
+        class="prose prose-neutral dark:prose-invert prose-sm md:prose-xl"
       >
         <Content />
       </article>
       <div class="py-6 space-y-8">
         <Separator />
         <h2 class="font-bold text-2xl">Share this article</h2>
-        <a
-          class={buttonVariants({ variant: "ghost" }) + " text-2xl"}
-          href=`https://x.com/intent/tweet?text=${entry.data.title} https://kotogavr.vercel.app/blog/${entry.slug}`
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          𝕏
-        </a>
-        <a
-          class={buttonVariants({ variant: "ghost" }) + " text-2xl"}
-          href=`https://www.facebook.com/sharer/sharer.php?u=https://kotogavr.vercel.app/blog/${entry.slug}&quote=`
-          target="_blank"
-          rel="noopener noreferrer"><Facebook /></a
-        >
-        <a
-          class={buttonVariants({ variant: "ghost" }) + " text-2xl"}
-          href=`https://www.linkedin.com/shareArticle/?mini=true&url=https://kotogavr.vercel.app/blog/${entry.slug}&summary=&source=AddToAny`
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Linkedin /></a
-        >
+        <div class="flex flex-1">
+          <a
+            class={buttonVariants({ variant: "ghost" })}
+            href=`https://x.com/intent/tweet?text=${entry.data.title} https://kotogavr.vercel.app/blog/${entry.slug}`
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <p class="text-xl">𝕏</p>
+          </a>
+          <a
+            class={buttonVariants({ variant: "ghost" }) + " text-2xl"}
+            href=`https://www.facebook.com/sharer/sharer.php?u=https://kotogavr.vercel.app/blog/${entry.slug}&quote=`
+            target="_blank"
+            rel="noopener noreferrer"><Facebook /></a
+          >
+          <a
+            class={buttonVariants({ variant: "ghost" }) + " text-2xl"}
+            href=`https://www.linkedin.com/shareArticle/?mini=true&url=https://kotogavr.vercel.app/blog/${entry.slug}&summary=&source=AddToAny`
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Linkedin /></a
+          >
+        </div>
       </div>
       <Separator />
       <div class="py-6 space-y-8">
-        <h2 class="font-bold text-2xl">Related articles</h2>
-        <div>{entry.data.relatedPosts}</div>
+        <h2 class="font-bold text-2xl pb-4">Related articles</h2>
+        <div
+          class="flex flex-col justify-between gap-2 md:flex-row md:items-stretch"
+        >
+          {
+            relatedPosts.map((p) => (
+              <div class=" group flex-1 cursor-pointer justify-between rounded-md border dark:border-neutral-700 border-neutral-300 p-4 transition-all duration-300 hover:-translate-y-2 hover:border-neutral-700 dark:hover:border-neutral-400">
+                <a href={p.slug} class="flex flex-col gap-4">
+                  <p>{p.data.title}</p>
+                  <p class="truncate text-muted-foreground text-sm">
+                    {p.data.description}
+                  </p>
+                </a>
+              </div>
+            ))
+          }
+        </div>
       </div>
     </div>
   </main>
