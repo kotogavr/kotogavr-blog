@@ -47,11 +47,11 @@ const relatedPosts = await getEntries(currentBlogPost.data.relatedPosts);
           >
         </li>
         <li class="text-muted-foreground">/</li>
-        <li class="max-w-32 sm:max-w-80">
+        <li class="max-w-60 sm:max-w-2xl">
           <a
             href=`/blog/${entry.slug}`
             class="text-black dark:text-white dark:hover:text-neutral-100 truncate block"
-            >{entry.slug}</a
+            >{entry.data.title}</a
           >
         </li>
       </ul>
