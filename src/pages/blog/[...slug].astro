@@ -108,6 +108,7 @@ const relatedPosts = await getEntries(currentBlogPost.data.relatedPosts);
             relatedPosts.map((p) => (
               <div class=" group flex-1 cursor-pointer justify-between rounded-md border dark:border-neutral-700 border-neutral-300 p-4 transition-all duration-300 hover:-translate-y-2 hover:border-neutral-700 dark:hover:border-neutral-400">
                 <a href={p.slug} class="flex flex-col gap-4">
+                  <img src=`/src/images/${p.data.image?.src}` alt={p.data.image?.alt} class="object-cover max-h-20"/>
                   <p>{p.data.title}</p>
                   <p class="truncate text-muted-foreground text-sm">
                     {p.data.description}
