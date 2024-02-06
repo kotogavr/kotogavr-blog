@@ -62,4 +62,8 @@
   h1 {
     @apply text-3xl font-extrabold leading-tight tracking-tighter md:text-4xl
   }
+
+  html {
+    scroll-behavior: smooth;
+  }
 }}
