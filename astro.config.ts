@@ -3,7 +3,7 @@ import react from "@astrojs/react";
 import tailwind from "@astrojs/tailwind";
 import mdx from "@astrojs/mdx";
 
-import vercel from "@astrojs/vercel/static";
+import vercel from "@astrojs/vercel/serverless";
 
 // https://astro.build/config
 export default defineConfig({
@@ -19,6 +19,8 @@ export default defineConfig({
   ],
   output: "server",
   adapter: vercel({
-    imageService: true,
+    webAnalytics: {
+      enabled: true,
+    },
   }),
 });
