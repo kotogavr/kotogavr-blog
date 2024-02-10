@@ -7,7 +7,7 @@ import SpeedInsights from "@vercel/speed-insights/astro";
 interface Props {
   title?: string | undefined;
   description?: string | undefined;
-  ogImage?: URL | undefined;
+  ogImage?: string | undefined;
 }
 
 const { title, description, ogImage } = Astro.props;
