@@ -22,13 +22,15 @@ const currentBlogPost = await getEntry("blog", entry.slug);
 
 //@ts-ignore
 const relatedPosts = await getEntries(currentBlogPost.data.relatedPosts);
+
+console.log(entry.data.image?.src.src);
 ---
 
 {/* @ts-ignore */}
 <BaseLayout
   title={entry.data.title}
   description={entry.data.description}
-  ogImage={entry.data.image?.src}
+  ogImage={entry.data.image?.src.src}
 >
   <main>
     <nav role="navigation">
@@ -49,7 +51,7 @@ const relatedPosts = await getEntries(currentBlogPost.data.relatedPosts);
           >
         </li>
         <li class="text-muted-foreground">/</li>
-        <li class="max-w-60 sm:max-w-2xl">
+        <li class="max-w-60 sm:max-w-xl">
           <a
             href=`/blog/${entry.slug}`
             class="text-black dark:text-white dark:hover:text-neutral-100 truncate block"
