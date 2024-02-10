@@ -22,8 +22,6 @@ const currentBlogPost = await getEntry("blog", entry.slug);
 
 //@ts-ignore
 const relatedPosts = await getEntries(currentBlogPost.data.relatedPosts);
-
-console.log(entry.data.image?.src.src);
 ---
 
 {/* @ts-ignore */}
