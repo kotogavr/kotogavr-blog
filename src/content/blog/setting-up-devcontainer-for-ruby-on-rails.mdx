@@ -46,7 +46,7 @@ For example, if you choose a Ruby on Rails devcontainer, it might install Node.j
 To circumvent this, I'll guide you on setting up a clean and lightweight devcontainer 
 specifically tailored for Ruby on Rails development.
 
-First of all insatall our [Dev Container Extension for VSCode](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers).
+First of all, install our [Dev Container Extension for VSCode](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers).
 
 
 And now we start with making new directory:
@@ -77,7 +77,7 @@ and then add this basic information:
       "extensions": [
         "Shopify.ruby-lsp",
         "castwide.solargraph",
-        "kaiwood.endwise",
+        "kaiwood.endwise"
       ]
     }
   },
@@ -90,6 +90,12 @@ and then add this basic information:
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}"
 }
 ```
+Curious about the `customizations` section?
+This is where you can specify the extensions you want to install in your devcontainer.
+In this case, we've added the **Ruby LSP**, **Solargraph**, and **Endwise** extensions.
+I talk about the first two in [this article](best-workflow-to-create-ruby-on-rails-project).
+Endwise is a simple extension that automatically adds "end" after "do" or "if" statements in Ruby.
+
 Now Inside .devcontianer create also Dockerfile:
 ```bash
 touch Dockerfile
@@ -101,6 +107,9 @@ FROM ruby
 ```
 
 ### Setting Up PostgreSQL Database in Devcontainer
+*Skip this if you don't want to use PostgreSQL*.
+
+
 If you want to utilize a PostgreSQL database in your project, you'll need to create new file:
 ```bash
 touch docker-compose.yml
@@ -147,7 +156,14 @@ it with Docker Desktop on their [website](https://docs.orbstack.dev/compare/dock
 
 Now that we've configured our Containerization Platform, reload VSCode with your 
 `my-rails-app`, and you'll be prompted to reopen it in a container. 
-Click on "Reopen in Container," and you'll now be working inside the container.
+Click on "Reopen in Container. Your devcontainer will start loading and 
+it may take a few minutes to complete. Here is the example 
+below of how it looks like when it's loading:
+
+![devcontainer is loading](./devcontainer_loading.png)
+
+Once the devcontainer is loaded, you'll be prompted to click any button to continue.
+Click and open new terminal. You can successfully close this Dev Containers window.
 
 If you open a terminal, you'll see something like this:
 
@@ -169,10 +185,13 @@ rails new -c tailwind . -d postgresql
 
 Note that we used a dot (.) instead of providing your repo name. 
 This is because we've already created the folder, and we're generating the project within 
-this existing folder.
+this existing folder. 
 
-Now, for the final step before running our server. 
-In the `database.yml` file, locate the "development" 
+This was the final step for those who don't plan
+to use PostgreSQL. You can now start developing your Ruby on Rails project.
+
+If you want to use PostgreSQL,
+in the `database.yml` file, locate the "development" 
 section and uncomment the lines for "database," 
 "username," "password," and "host." 
 Mirror the structure provided in the example. 
