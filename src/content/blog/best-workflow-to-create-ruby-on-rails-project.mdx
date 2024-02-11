@@ -4,7 +4,7 @@ description: How to setup Ruby on Rails project (gems, setup tricks)
 tags: ['Ruby on Rails']
 image: {src: './best-workflow-to-create-ruby-on-rails-project.png', alt: 'alt text'}
 publishDate: 22/01/2024
-relatedPosts: ['setting-up-devcontainer-for-ruby-on-rails']
+relatedPosts: ['setting-up-devcontainer-for-ruby-on-rails', 'how-to-setup-google-login-with-ruby-on-rails']
 ---
 
 60% of success in any project lies in a good start, and it's often the trickiest part, isn't it? 
@@ -140,7 +140,14 @@ gem 'solargraph', require: false
 gem 'solargraph-rails', require: false
 ```
 
+
 Install the [Ruby Solargraph](https://marketplace.visualstudio.com/items?itemName=castwide.solargraph) extension.
+
+Run bundle command:
+
+```bash
+bundle
+```
 
 To activate the extension, run `solargraph config` to generate 
 .solargraph.yml. Add the following lines to this file to instruct your 
@@ -148,12 +155,6 @@ IDE plugin to use solargraph-rails:
 ```yaml
 plugins:
   - solargraph-rails
-```
-
-Run bundle command:
-
-```bash
-bundle
 ```
 
 ### Annotate
@@ -165,19 +166,19 @@ to your Gemfile within the **Development group**:
 gem 'annotate'
 ```
 
-Run this command to generate shemas for all models:
+Run bundle command:
+
+```bash
+bundle
+```
+
+Run this command to generate shemas for all models (or do it later ones you have models):
 
 ```bash
 annotate --models
 ```
 
 >Note❗️ Annotate depends on solargraph and cannot work without it.
-
-Run bundle command:
-
-```bash
-bundle
-```
 
 ### Erb formatter
 Erb formatter is a gem that helps to format your erb templates. 
@@ -201,7 +202,94 @@ it's the default templating engine, and you'll find more examples and
 tutorials on how to use it. For more advanced users, I recommend an 
 alternative called Phlex, but we will discuss it later in this post.
 
-This concludes the section on developer gems. Now, 
+This concludes the section on developer gems. Finally, you Gemfile should look 
+something like this:
+
+```ruby
+source 'https://rubygems.org'
+
+ruby '3.3.0'
+
+# Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
+gem 'rails', '~> 7.1.3'
+
+# The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
+gem 'sprockets-rails'
+
+# Use sqlite3 as the database for Active Record
+gem 'sqlite3', '~> 1.4'
+
+# Use the Puma web server [https://github.com/puma/puma]
+gem 'puma', '>= 5.0'
+
+# Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
+gem 'importmap-rails'
+
+# Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
+gem 'turbo-rails'
+
+# Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
+gem 'stimulus-rails'
+
+# Use Tailwind CSS [https://github.com/rails/tailwindcss-rails]
+gem 'tailwindcss-rails'
+
+# Use Redis adapter to run Action Cable in production
+# gem "redis", ">= 4.0.1"
+
+# Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
+# gem "kredis"
+
+# Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
+# gem "bcrypt", "~> 3.1.7"
+
+# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
+gem 'tzinfo-data', platforms: %i[windows jruby]
+
+# Reduces boot times through caching; required in config/boot.rb
+gem 'bootsnap', require: false
+
+# Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
+# gem "image_processing", "~> 1.2"
+
+gem 'authentication-zero'
+gem 'omniauth-google-oauth2'
+
+group :development, :test do
+  # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
+  gem 'annotate'
+  gem 'debug', platforms: %i[mri windows]
+  gem 'rubocop', require: false
+  gem 'rubocop-rails', require: false
+  gem 'solargraph', require: false
+  gem 'solargraph-rails', require: false
+end
+
+group :development do
+  # Use console on exceptions pages [https://github.com/rails/web-console]
+  gem 'web-console'
+
+  # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]
+  # gem "rack-mini-profiler"
+
+  # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
+  # gem "spring"
+end
+
+group :test do
+  # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
+  gem 'capybara'
+  gem 'selenium-webdriver'
+end
+# Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
+gem 'bcrypt', '~> 3.1.7'
+# Use OmniAuth to support multi-provider authentication [https://github.com/omniauth/omniauth]
+gem 'omniauth'
+# Provides a mitigation against CVE-2015-9284 [https://github.com/cookpad/omniauth-rails_csrf_protection]
+gem 'omniauth-rails_csrf_protection'
+```
+
+Now, 
 let's delve into some additional gems and setup tricks.
 ## Setting up authentication
 
@@ -227,6 +315,13 @@ Add [authentication-zero](https://github.com/lazaronixon/authentication-zero) to
 ```ruby
 gem 'authentication-zero'
 ```
+
+Don't forget to run bundle command:
+
+```bash
+bundle
+```
+
 Then run command in terminal to setup authentication-zero with [omniauth](https://github.com/omniauth/omniauth) gem: 
 
 
@@ -240,12 +335,6 @@ For this we need to add [omniauth-google-oauth2](https://github.com/zquestz/omni
 
 ```ruby
 gem 'omniauth-google-oauth2'
-```
-
-Don't forget to run bundle command:
-
-```bash
-bundle
 ```
 
 To set up Google login, we need to add credentials to our project. Below is how you can achieve this.
@@ -274,6 +363,13 @@ google:
   client_secret: GSOKSPX-mjnjhjbnHgvd54F-knh75gffh
 ```
 
+Now close this file and you will see in terminal:
+  
+  ```bash
+  File encrypted and saved.
+  ```
+This means that everything is set up correctly and you have the master key.
+
 Now let's open `config/initializers/omniauth.rb` and add this code:
 
 ```ruby
@@ -283,12 +379,26 @@ end
 ```
 We use the `dig` method to retrieve credentials from the credentials.yml.enc file, and using 'dig' is preferred over using the `[]` method.
 
-Now, let's add the Google login button to our view. Add it to the 
-`app/views/layouts/application.html.erb` file:
+Now let's start the server and check if everything is working. 
+First of all, you will see pending migrations from the authentication-zero gem.
+![pending migrations](./pending_migrations.png)
 
+After running pending migrations, you will see the following:
+![sign in page with Tailwind CSS](./sign_in_page.png)
+
+Sign is with OmniAuth is missing now. Let's replace it with Google login.
+
+Open `app > views > sessions > new.html.erb` file and replace 'Sigin in with OmniAuth' with this code:
 ```erb
-<%= link_to "Sign in with Google", user_google_oauth2_omniauth_authorize_path, method: :post %>
+<%= link_to "Sign in with Google", '/auth/google_oauth2', method: :post, data: { turbo: false } %>
 ```
+
+now when you try to click on it you will see the error like : `No route matches [POST] "/auth/google_oauth2"`
+
+It's ok because we need to add this route in our Google Cloud Console like this:
+![How to add Redirect URL to Google Cloud Console](./redirect.png)
+
+If you're stuck, I've written a separate blogpost on how to setup Google login with Ruby on Rails, you can check it out [here](/blog/how-to-setup-google-login-with-ruby-on-rails)
 
 If you open the routes.rb file, you'll see the following:
 
@@ -298,26 +408,26 @@ Rails.application.routes.draw do
   post 'sign_in', to: 'sessions#create'
   get  'sign_up', to: 'registrations#new'
   post 'sign_up', to: 'registrations#create'
-  resources :sessions, only: [:index, :show, :destroy]
-  resource  :password, only: [:edit, :update]
-  namespace :sessions do
-    resource :sudo, only: [:new, :create]
-  end
+  resources :sessions, only: %i[index show destroy]
+  resource  :password, only: %i[edit update]
   namespace :identity do
-    resource :email,              only: [:edit, :update]
-    resource :email_verification, only: [:edit, :create]
-    resource :password_reset,     only: [:new, :edit, :create, :update]
-  end
-  namespace :two_factor_authentication do
-    resource :challenge, only: [:new, :create]
-    resource :totp,      only: [:new, :create]
+    resource :email,              only: %i[edit update]
+    resource :email_verification, only: %i[show create]
+    resource :password_reset,     only: %i[new edit create update]
   end
   get  '/auth/failure',            to: 'sessions/omniauth#failure'
   get  '/auth/:provider/callback', to: 'sessions/omniauth#create'
   post '/auth/:provider/callback', to: 'sessions/omniauth#create'
-  #...
-end
+  root 'home#index'
+  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
+  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
+  # Can be used by load balancers and uptime monitors to verify that the app is live.
+  get 'up' => 'rails/health#show', as: :rails_health_check
+
+  # Defines the root path route ("/")
+  # root "posts#index"
+end
 ```
 The above routes were added by Authentication Zero during the code 
 generation step above.
