@@ -71,10 +71,10 @@ And I'll also share some additional gems and setup tricks:
 - database: litestack
 
 
-Let's start with creating new project:
+Let's start with creating new very simple, minimalistic project:
 
 ```bash
-rails new -c tailwind [my-project] -d postgresql --skip-jbuilder
+rails new [my-project] -c tailwind -d postgresql --skip-jbuilder -T --skip-action-mailbox -a propshaft
 ```
 
 #### -c
