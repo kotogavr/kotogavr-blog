@@ -3,7 +3,7 @@ title: Best Workflow to Create a Ruby on Rails Project in VSCode
 description: How to setup Ruby on Rails project (gems, setup tricks)
 tags: ['Ruby on Rails']
 image: {src: './best-workflow-to-create-ruby-on-rails-project.png', alt: 'alt text'}
-publishDate: 22/01/2024
+publishDate: 21/04/2024
 relatedPosts: ['setting-up-devcontainer-for-ruby-on-rails', 'how-to-setup-google-login-with-ruby-on-rails']
 ---
 
@@ -68,39 +68,74 @@ And I'll also share some additional gems and setup tricks:
 - social login: omniauth-google-oauth2
 - credentials setup
 - erb alternative: phlex
-- database: litestack
+- database: SQLite3
 
 
-Let's start with creating new very simple, minimalistic project:
+Let's start with creating new very simple, minimalistic project. Feel free to remove or add any options:
 
 ```bash
-rails new [my-project] -c tailwind -d postgresql --skip-jbuilder -T --skip-action-mailbox -a propshaft
+rails new [my-project] -c tailwind -d postgresql -J -T -a propshaft --skip-jbuilder --skip-action-mailbox
 ```
 
 #### -c
-I prefer to use Tailwind CSS as a CSS framework, so I 
+Sometimes I use Tailwind CSS as a CSS framework, so I 
 add the `-c tailwind` option to use it out of the box. 
 Of course, you can add Tailwind at any time later, but this way, 
 you will have a designed UI from the very beginning.
 
 #### -d
 You can add PostgreSQL as a database, as in the example `-d postgresql`. 
-However, I personally prefer to use SQLite3 for production, 
-and I will explain the reason later when I cover LiteStack. 
+However, I personally prefer to use SQLite3 for production because it's lightweight and simple to use.
 The **SQLite3 database** is the default database used when a new Ruby 
 on Rails application is created. This can be changed using the `-d` 
 or `--database` option with allowed values: `mysql`, `oracle`, 
 `postgresql`, `sqlite3`, `frontbase`, `ibm_db`, `sqlserver`, 
 `jdbcmysql`, `jdbcsqlite3`, `jdbcpostgresql`, `jdbc`. 
-We'll stick with the default database.
 
+### -J
+This option avoid JavaScript installation completely in your project. If you need JS instead, feel free to remove this `-J` now.
+
+### -T
+**T** stands for 'skip tests'. If you decide later that you want to add tests to your project, you can do so manually
+ by adding the necessary testing gems to your Gemfile and generating the test files 
+ using Rails generators or other testing frameworks like RSpec or Minitest.
+
+ ### -a
+**-a** stands for asset pipeline and specifies that you want to use `propshaft` as the asset pipeline for your 
+Rails application. Propshaft is a new asset pipeline introduced in Rails 7, designed to replace the older 
+`Sprockets-based` asset pipeline. This change aims to improve the performance and flexibility of 
+asset handling in Rails applications. So, for now, old Sprockets is the default option, and before Propshaft replaces 
+it, we'll need to add this option manually every time we create a new project.
+
+When you use the -a propshaft option, Rails will configure your project to use Propshaft for managing assets. This includes:
+
+**Asset Compilation**: Propshaft will compile your assets (CSS, JavaScript, images, etc.) in a more efficient 
+manner compared to Sprockets.
+
+**Asset Preprocessing**: It supports modern asset preprocessing tools and techniques, allowing for more streamlined 
+development workflows.
+
+**Improved Performance**: By leveraging modern web standards and optimizations, Propshaft aims to offer better 
+performance for asset delivery in Rails applications.
+
+### extras
 The `--skip-jbuilder` option will skip the installation of the 
 Jbuilder gem. Jbuilder is a templating engine for JSON, 
 which I personally don't use.
 
-You can also check commands on RoR guides at 
+The `--skip-action-mailbox` option will skip the installation of the Action Mailbox gem in your new project. 
+Action Mailbox is a framework for routing incoming emails to controller-like mailboxes in a Rails application. 
+So, you will *still* have a mailbox in your application to send emails, but you won't be able to receive them. 
+I don't think this is such a necessary thing to have now, so I normally skip this too, and later you can always 
+install the Action Mailer gem.
+
+> You can also check commands on RoR guides at 
 https://guides.rubyonrails.org/command_line.html or simply call 
 `rails new -h` to see all available options.
+
+###  
+
+
 ### Rubocop
 RuboCop is a static code analyzer that helps to keep your code clean and consistent. 
 Add the [RuboCop gem](https://github.com/rubocop/rubocop) by 
@@ -496,53 +531,6 @@ Once the gem is installed, run the install generator.
   ```
 Now, you can rename your `.html.erb` files to `.rb` files and use Phlex instead of erb. 
 If you have .erb files in your project, you can use [https://phlexing.fun/](https://phlexing.fun/) to convert erb to rb or you can simply have both erb and rb files in your project.
-
-## LiteStack
-
-I'm using SQLite in production because my approach is to build Single-Machine Rails applications.
-And LiteStack is a gem that allows to use SQLite in production. [Litestack](https://github.com/oldmoe/litestack) consist of:
-- [LiteDB](https://github.com/oldmoe/litestack?tab=readme-ov-file#usage): an adapter for database
-- [LiteCache](https://github.com/oldmoe/litestack?tab=readme-ov-file#sequel): a caching library that uses SQLite as a backend
-- [LiteCable](https://github.com/oldmoe/litestack?tab=readme-ov-file#actioncable): SQLite as a Pub/Sub adapter for ActionCable
-- [LiteJob](https://github.com/oldmoe/litestack?tab=readme-ov-file#activeresourcecache): a background job processor for ActiveJob
-- [LiteSearch](https://github.com/oldmoe/litestack?tab=readme-ov-file#actioncable): a full-text search engine for LiteDB
-- [LiteMetric](https://github.com/oldmoe/litestack?tab=readme-ov-file#litemetric): a metrics collector for Rails
-- [LiteBoard](https://github.com/oldmoe/litestack?tab=readme-ov-file#liteboard): a simple web server that provides a web interface for the collected metrics
-
-
-As you can see, LiteStack is a full-stack solution for SQLite in production. The point of using Litestack is that you can refuse from using any other tools like:
-- Database Server (e.g. PostgreSQL, MySQL)
-- Cache Server (e.g. Redis, Memcached)
-- Job Processor (e.g. Sidekiq, Goodjob)
-- Pubsub Server (e.g. Redis, PostgreSQL)
-- Fulltext Search Server (e.g. Elasticsearch, Mielisearch)
-
-
-To add **LiteStack** to your project add litestack to Gemfile:
-```ruby
-gem 'litestack'
-```
-
-Run bundle command:
-
-```bash
-bundle
-```
-
-Then run generator to setup LiteStack:
-
-```bash
-rails g litestack:install
-```
-
-Also in database.yml file change adapter:
-
-```yml
-adapter: litedb
-# normal sqlite3 configuration follows
-```
-
-And that's it! 
 
 ## Conclusion
 
