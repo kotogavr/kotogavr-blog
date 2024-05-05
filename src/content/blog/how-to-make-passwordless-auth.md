@@ -1,9 +1,9 @@
 ---
-title: How to Make Passwordless Authentication from Scratch 
+title: How to Make Passwordless Authentication from Scratch with Ruby on Rails
 description: In this post we will create a simple yet effective authentication using passwordless method or so called "magic link" method. The main idea is to understand what is the idea behind these method and how to program one without using any gems.
 tags: ['Ruby on Rails']
-image: {src: './best-workflow-to-create-ruby-on-rails-project.png', alt: 'alt text'}
-publishDate: 28/04/2024
+image: {src: './how-to-make-passwordless-auth.png', alt: 'alt text'}
+publishDate: 04/05/2024
 relatedPosts: ['setting-up-devcontainer-for-ruby-on-rails']
 ---
 
@@ -54,14 +54,14 @@ From the Ruby on Rails developer perspective the algo looks as follows:
 2. User model will only need an email (no password)
 3. SignInToken is a token that is needed only for verification process. It will appear in the email in the form on magic link and should be delited after the user successfully used this link for login.
 4. Session model will handle the user's current session once they've successfully authenticated using the magic link sent to their email.
-5. When a user requests to login (by clicking the button "Send email"), we generate a unique token (the SignInToken) and send it to the email address in the following format: *{ 'http://yourapp.com/verify?SignInToken' }*
+5. When a user requests to login (by clicking the button "Send email"), we generate a unique token (the SignInToken) and send it to the email address in the following format: `http://yourapp.com/verify?sid=SignInToken`
 6. The user clicks on magic link in the email, which directs them back to our application with the token embedded in the URL.
 7. Upon receiving the request with the token, we validate it against the corresponding record in the SignInToken model. If the token is valid and hasn't expired, we mark it as used and proceed to create a new session for the user.
 8. Once the session is created, the user is considered authenticated and is redirected to the page for authenticated users.
 9. For added security, we should implement measures such as token expiration and limiting the number of times a token can be used.
 
 
-## Implementation
+## Implementation. Authentication and writing cookies
 Let's start by making necessary models for our auth: User, SignInToken and Session.
 ```bash
 rails g model user email:string
@@ -112,9 +112,6 @@ Rails.application.routes.draw do
   get 'login' => 'sessions#new', as: :login
 
   get 'up' => 'rails/health#show', as: :rails_health_check
-
-  # Defines the root path route ("/")
-  # root "posts#index"
 end
 ```
 
@@ -167,7 +164,7 @@ Go to the UserMailer file and let's write the email logic.
 class UserMailer < ApplicationMailer
   def passwordless
     @user = params[:user]
-    @signed_id = @user.sign_in_token.create.signed_id(expires_in: 1.day)
+    @signed_id = @user.sign_in_tokens.create.signed_id(expires_in: 1.day)
 
     mail to: @user.email, subject: 'Your sign in link'
   end
@@ -219,8 +216,9 @@ class SessionsController < ApplicationController
       user = SignInToken.find_signed!(params[:sid])
     rescue StandardError
       redirect_to login_path, alert: 'Invalid or expired token'
+      return
     end
-      session_record = user.sessions.create!
+    session_record = user.sessions.create!
     cookies.signed.permanent[:session_token] = { value: session_record.id, httponly: true }
     user.sign_in_tokens.delete_all
     redirect_to root_path, notice: 'Successfully signed in'
@@ -242,12 +240,83 @@ After checking the token and creating the session, we delete all the SignInToken
 
 Finally, the user is redirected to the `root_path` (or any other path of your choice for logged in users) with a notice message indicating that the sign-in process was successful.
 
+I don't have root_path just yet so I create Home controller and home#index path. In order to make this tutorial somehow shorter, I'll skip these steps with creating Home controller and view, hopefully you won't have a hard time going through this step on your own. And I add home route to the routes.rb file:
+
+```ruby
+Rails.application.routes.draw do
+  get 'sessions/new'
+  get 'sessions/create'
+  get 'sessions/verify'
+  get 'sessions/destroy'
+
+  get 'login' => 'sessions#new', as: :login
+  get 'up' => 'rails/health#show', as: :rails_health_check
+  
+  # add root page
+  root 'home#index'
+end
+```
+
 So here we should stop and think...as we basically made an authentication system with email, it should work and we can check it somehow. The last thing is to make a view with the basic auth form.
 
 ```erb
+<h1>Sign in</h1>
 
+<%= form_with(url: sessions_path) do |form| %>
+
+  <div>
+    <%= form.label :email, style: 'display:block' %>
+    <%= form.email_field :email, required: true, autofocus: true %>
+  </div>
+
+  <div>
+    <%= form.submit "Verify email" %>
+  </div>
+<% end %>
 ```
 
-Now I think we've finished with making authentication.  
+Now I think we've finished with making like 2/3 of our main task. We can now run the server and check the login page.
 
+```bash
+bin/rails s
+```
 
+Oops, we've just got an error.
+
+![Error authmagic](error_authmagic.png)
+
+It happens because we haven't properly defined the routes in our application. Let's fix it.
+
+```ruby
+Rails.application.routes.draw do
+  get 'login' => 'sessions#new', as: :login
+  get 'up' => 'rails/health#show', as: :rails_health_check
+
+  # define sessions_path
+  resources :sessions, only: %i[create destroy] do
+    get :verify, on: :collection
+  end
+  root 'home#index'
+end
+```
+Here's what each part of the code does:
+
+`resources :sessions, only: %i[create destroy]`: This line creates RESTful routes for the SessionsController, but it only creates the create and destroy actions. The only option is used to limit the routes to just these two actions.
+`get :verify, on: :collection`: This line defines an additional route for the verify action in the SessionsController. The on: :collection option specifies that this action is a collection route, meaning it doesn't require an ID parameter.
+
+By defining these routes, Rails automatically generates several route helpers, including:
+
+`sessions_path`: This helper corresponds to the path for the create action, which is typically used for submitting a new session (logging in).
+`session_path(id)`: This helper corresponds to the path for the destroy action, which is typically used for logging out. It requires an id parameter.
+`verify_sessions_path`: This helper corresponds to the path for the verify action, which you defined as a collection route.
+
+When you use <%= form_with(url: sessions_path) %> in your view, Rails knows to generate the correct URL for the create action of the SessionsController because you defined the resources :sessions routes.
+By properly defining the routes for your SessionsController, Rails can generate the necessary route helpers, including sessions_path, which resolves the undefined local variable or method 'sessions_path' error you were encountering.
+
+Now if we go to `127.0.0.1:3000/login`, we should see our login page.
+
+![Sign in](signin_page_for_authmagic.png)
+
+And now if we put an email and receive the verification link we should be logged in.
+
+## Authorization and reading cookies
