@@ -211,11 +211,11 @@ class SessionsController < ApplicationController
   end
 
   # add this method
-  def verify
+   def verify
     begin
-      user = SignInToken.find_signed!(params[:sid])
+      user = SignInToken.find_signed!(params[:sid]).user
     rescue StandardError
-      redirect_to login_path, alert: 'Invalid or expired token'
+      redirect_to(login_path, alert: 'Invalid or expired token')
       return
     end
     session_record = user.sessions.create!
@@ -317,6 +317,66 @@ Now if we go to `127.0.0.1:3000/login`, we should see our login page.
 
 ![Sign in](signin_page_for_authmagic.png)
 
-And now if we put an email and receive the verification link we should be logged in.
+And now if we put an email and receive the verification link we should be logged in and redirected to the path for authenticated users.
 
 ## Authorization and reading cookies
+
+For now, all our application is accessible by anyone by default. So our task for now is to restrict access to root_path and redirect user to login page until verification.
+
+We need to know weather the user is authenticated or not. We can do it by checking the presence (or actually reading) of a session cookie. Navigate to ApplicationController and add the following code:
+
+```ruby
+class ApplicationController < ActionController::Base
+  before_action :authenticate
+
+  private
+
+  def authenticate
+    if (session_record = Session.find_by(id: cookies.signed[:session_token]))
+      Current.session = session_record
+    else
+      redirect_to login_path
+    end
+  end
+end
+```
+On the application level, we define the method `authenticate`, where we read cookies and assign a session if present; otherwise, the user will be redirected to the login page.
+
+To make this work, I utilize the `Current` class. This is a custom class used to store and manage global data (data that needs to be accessible from anywhere in the application).
+You need to create a new file in the `models` folder called `current.rb` and add this code:
+
+```ruby
+# models/current.rb
+
+class Current < ActiveSupport::CurrentAttributes
+  attribute :session
+  delegate :user, to: :session, allow_nil: true
+end
+```
+By assigning the session_record to `Current.session` in ApplicationController, you're making that session object available throughout the application, thanks to the Current class you defined earlier.
+Since you also delegated the user method to the session attribute in the Current class (delegate :user, to: :session, allow_nil: true), you can now access the user associated with the current session by calling Current.user from anywhere in your application.
+
+One last thing is to add before_action where it is necessary:
+
+```ruby
+# controllers/home_controller.rb
+class HomeController < ApplicationController
+  before_action :authenticate
+
+  def index; end
+end
+```
+
+And we also need to skip before action where the authentication is required:
+
+```ruby
+# controllers/sessions_controller.rb
+
+class SessionsController < ApplicationController
+  skip_before_action :authenticate, only: %i[new create verify]
+
+# rest of the code
+
+```
+
+
