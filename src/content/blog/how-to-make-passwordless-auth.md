@@ -378,5 +378,35 @@ class SessionsController < ApplicationController
 # rest of the code
 
 ```
+Now if we will reload our rails server and delete cookies and will try to access home page we will be redirected to login page. Once we log in we will be able to access home page.
 
+And the last part of this article will be the shortest one. How to log out from our app.
 
+## Delete sessions and cookies
+
+We need to write our destroy method in our sessions_controller.
+
+```ruby
+# controllers/sessions_controller.rb
+
+ def destroy
+    Current.user.sessions.find(params[:id]).destroy
+
+    redirect_to(login_path, notice: "You're logged out")
+  end
+```
+
+As we now have a Current helper now we know who is this current user and whose session we should destroy.
+
+Now let's write a simple Logout button right in our index#home page.
+
+```ruby
+# views/home/index.html.erb
+<%= button_to "Log Out", session_path(Current.session), method: :delete, class: "btn btn-danger" %>
+```
+
+That's it! Test it out. Log in and log out should work as expected. Now with the same logic you can add a list of sessions and make it possible to delete any session of your user, not only the current one.
+
+I also leave the authmagic code here for you references.
+
+Happy coding
