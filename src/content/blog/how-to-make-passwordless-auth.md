@@ -407,6 +407,6 @@ Now let's write a simple Logout button right in our index#home page.
 
 That's it! Test it out. Log in and log out should work as expected. Now with the same logic you can add a list of sessions and make it possible to delete any session of your user, not only the current one.
 
-I also leave the authmagic code here for you references.
+I also leave the authmagic code [here](https://github.com/kotogavr/authmagic) for you reference.
 
-Happy coding
+Happy coding!
