@@ -11,9 +11,9 @@ relatedPosts: ['setting-up-devcontainer-for-ruby-on-rails']
 
 I find passwordless authentication to be a better alternative to normal authentication with login and password because it really annoys me every time to generate and save a new password. So I am always looking for better alternatives. For example, social authentication. I wrote about it [here](blog/how-to-setup-google-login-with-ruby-on-rails). 
 
-This particular method is another way to request registration via email, inspired by the [**authentication-zero library**](https://github.com/lazaronixon/authentication-zero/), but I've made it more simple and straightforward.
+This particular method is another way to request registration via email, inspired by the [**authentication-zero library**](https://github.com/lazaronixon/authentication-zero/), but I've made it simpler and more straightforward.
 
-For this tutorial, I want to provide an extensive explanation, addressing the questions I've posed to myself, much like I would ask a teacher while learning.
+For this tutorial, I aim to provide an extensive explanation, addressing the questions I've posed to myself, much like I would ask a teacher while learning.
 
 ## The Difference Between Authentication and Authorization
 
@@ -37,28 +37,31 @@ Think of authentication and authorization as two security layers working togethe
 
 ## The algorithm
 
-Let's first understand the algorithm from both sides before we jump into implementation. For us there are no difference between registration and login which another big plus to the passworless method.
+Let's first understand the algorithm from both sides before we jump into implementation. For us, there is no difference between registration and login, which is another big plus for the passwordless method.
 
 The logic of passwordless authentication from the user's perspective is as follows:
 
-1. A user attempts to access a page restricted to unregistered users;
-2. The user is redirected to the "login" page;
-3. On the login page, the user enters their email address;
-4. After submitting the email address, the user receives an email containing a magic link;
-5. The user clicks on the magic link in the email, which authorizes them;
+1. A user attempts to access a page restricted to unregistered users.
+2. The user is redirected to the "login" page.
+3. On the login page, the user enters their email address.
+4. After submitting the email address, the user receives an email containing a magic link.
+5. The user clicks on the magic link in the email, which authorizes them.
 6. Upon authorization, the user is redirected to the necessary page for registered users.
+7. Then we also need to handle the logout case.
 
 
-From the Ruby on Rails developer perspective the algo looks as follows:
-1. We need 3 models for our auth: User, SignInToken and Session
-2. User model will only need an email (no password)
-3. SignInToken is a token that is needed only for verification process. It will appear in the email in the form on magic link and should be delited after the user successfully used this link for login.
-4. Session model will handle the user's current session once they've successfully authenticated using the magic link sent to their email.
-5. When a user requests to login (by clicking the button "Send email"), we generate a unique token (the SignInToken) and send it to the email address in the following format: `http://yourapp.com/verify?sid=SignInToken`
-6. The user clicks on magic link in the email, which directs them back to our application with the token embedded in the URL.
-7. Upon receiving the request with the token, we validate it against the corresponding record in the SignInToken model. If the token is valid and hasn't expired, we mark it as used and proceed to create a new session for the user.
+From the Ruby on Rails developer perspective, the algorithm looks as follows:
+
+1. We need 3 models for our auth: User, SignInToken, and Session.
+2. The User model will only need an email (no password).
+3. SignInToken is a token needed only for the verification process. It will appear in the email in the form of a magic link and should be deleted after the user successfully uses this link for login.
+4. The Session model will handle the user's current session once they've successfully authenticated using the magic link sent to their email.
+5. When a user requests to login (by clicking the button "Send email"), we generate a unique token (the SignInToken) and send it to the email address in the following format: `http://yourapp.com/verify?sid=SignInToken`.
+6. The user clicks on the magic link in the email, which directs them back to our application with the token embedded in the URL.
+7. Upon receiving the request with the token, we validate it against the corresponding record in the SignInToken model. If the token is valid and hasn't expired, we proceed to create a new session for the user.
 8. Once the session is created, the user is considered authenticated and is redirected to the page for authenticated users.
-9. For added security, we should implement measures such as token expiration and limiting the number of times a token can be used.
+9. Then we implement the method of authorization so that we can restrict unverified users from accessing certain pages.
+10. Similarly, we implement the logout method.
 
 
 ## Implementation. Authentication and writing cookies
@@ -115,7 +118,7 @@ Rails.application.routes.draw do
 end
 ```
 
-Then let's open our controller and add the auth magic:
+Then let's open our controller and add the auth magic(create method):
 
 ```ruby
 # controllers/sessions_controller.rb
@@ -180,9 +183,9 @@ This is essentially the magic of Ruby on Rails. It handles all encryption by its
 
 If you have a question like, "Where is this `signed_id` stored if our SignInToken model has nothing but `user:references`?"
 
-Well, I had the same question, and the answer is, "it's not stored in the database at all." In fact, it's generated in the email itself and placed here.
+Well, I had the same question, and the answer is, "it's not stored in the database at all." In fact, it's generated in the email itself and printed here just once.
 
-Now that we've configured how our email should be generated, it's time to fix its view:
+Now that we've configured how our email should be generated, it's time to fix its view.
 ```erb
 <%# views/user_mailer/passwordless.html.erb %>
 
@@ -193,9 +196,9 @@ Now that we've configured how our email should be generated, it's time to fix it
 <p><%= link_to "Sign in without password", verify_sessions_url(sid: @signed_id) %></p>
 ```
 
-In the email, as you can see, we generate the URL based on the verify method of our session controller (which is defined but has no logic inside yet, but it will soon). And at the end of the URL, there will be a hash that we defined in the previous step, `( sid: @signed_id )`.
+In the email, as you can see, we generate the URL based on the verify method of our session controller (which is defined but has no logic inside yet, but it will soon). And at the end of the URL, there will be a hash that we defined in the previous step, `(sid: @signed_id)`.
 
-Now let's go to our sessions_controller and write the verify method and fix our TODO!.
+Now let's go to our sessions_controller and write the verify method and fix our TODO!
 
 ```ruby
 # controllers/sessions_controller.rb
@@ -227,22 +230,20 @@ class SessionsController < ApplicationController
   def destroy; end
 end
 ```
-First of all, we added UserMailer in `create` method since we added mailer and the email view.
+First of all, we added UserMailer in the `create` method since we added the mailer and the email view.
 
-Secondly, we added `verify` method. Here is the breakdown what is happening here line by line:
-So first we validate the token the was passed through email. And as I already mentioned, to validate something that has signed_id, we use `find_signed` method. And this way we find the user associated with the token.
+Secondly, we added the `verify` method. Here is the breakdown of what is happening here line by line:
+- First, we validate the token that was passed through email. As I already mentioned, to validate something that has a signed_id, we use the `find_signed` method. This way, we find the user associated with the token.
+- Also, we handle invalid and expired tokens under `rescue StandardError`. If the token is valid, a new Session record is created and associated with the user (`session_record`). This session record will be used to identify the user's authenticated state.
+- Now, cookies. We set a signed, permanent cookie named `session_token` with the value of the newly created session record's ID. The `httponly: true` option ensures that the cookie can only be accessed by the server, preventing client-side scripts from reading or modifying the cookie.
+- After checking the token and creating the session, we delete all the SignInToken records associated with the user using the `delete_all` method. This step is typically done for security reasons, as it ensures that any previously issued tokens are invalidated after successful login.
+- Finally, the user is redirected to the `root_path` (or any other path of your choice for logged-in users) with a notice message indicating that the sign-in process was successful.
 
-Also we handle invalid and expired tokens under `rescue StandardError`. If the token is valid, a new Session record is created and associated with the user (`session_record`). This session record will be used to identify the user's authenticated state. 
-
-Now cookies. We set a signed, permanent cookie named `session_token` with the value of the newly created session record's ID. The `httponly: true` option ensures that the cookie can only be accessed by the server, preventing client-side scripts from reading or modifying the cookie.
-
-After checking the token and creating the session, we delete all the SignInToken records associated with the user using `delete_all` method. This step is typically done for security reasons, as it ensures that any previously issued tokens are invalidated after successful login.
-
-Finally, the user is redirected to the `root_path` (or any other path of your choice for logged in users) with a notice message indicating that the sign-in process was successful.
-
-I don't have root_path just yet so I create Home controller and home#index path. In order to make this tutorial somehow shorter, I'll skip these steps with creating Home controller and view, hopefully you won't have a hard time going through this step on your own. And I add home route to the routes.rb file:
+I don't have a `root_path` just yet, so I created Home controller and `home#index` path. To make this tutorial somewhat shorter, I'll skip these steps with creating the Home controller and view. Hopefully, you won't have a hard time going through this step on your own. Then, I add the home route to the `routes.rb` file:
 
 ```ruby
+# routes.rb
+
 Rails.application.routes.draw do
   get 'sessions/new'
   get 'sessions/create'
@@ -257,9 +258,10 @@ Rails.application.routes.draw do
 end
 ```
 
-So here we should stop and think...as we basically made an authentication system with email, it should work and we can check it somehow. The last thing is to make a view with the basic auth form.
-
+So here we should stop and think... as we've basically created an authentication system with email, it should work, and we can check it somehow. The last thing is to create a view with the basic auth form:
 ```erb
+<%# views/sessions/new.html.erb %>
+
 <h1>Sign in</h1>
 
 <%= form_with(url: sessions_path) do |form| %>
@@ -275,19 +277,21 @@ So here we should stop and think...as we basically made an authentication system
 <% end %>
 ```
 
-Now I think we've finished with making like 2/3 of our main task. We can now run the server and check the login page.
+Now I think we've finished about 2/3 of our main task. We can now run the server and check the login page.
 
 ```bash
 bin/rails s
 ```
 
-Oops, we've just got an error.
+Oops, we've just encountered an error.
 
 ![Error authmagic](error_authmagic.png)
 
 It happens because we haven't properly defined the routes in our application. Let's fix it.
 
 ```ruby
+# routes.rb
+
 Rails.application.routes.draw do
   get 'login' => 'sessions#new', as: :login
   get 'up' => 'rails/health#show', as: :rails_health_check
@@ -301,31 +305,35 @@ end
 ```
 Here's what each part of the code does:
 
-`resources :sessions, only: %i[create destroy]`: This line creates RESTful routes for the SessionsController, but it only creates the create and destroy actions. The only option is used to limit the routes to just these two actions.
-`get :verify, on: :collection`: This line defines an additional route for the verify action in the SessionsController. The on: :collection option specifies that this action is a collection route, meaning it doesn't require an ID parameter.
+`resources :sessions, only: %i[create destroy]`: This line creates RESTful routes for the SessionsController, but it only creates the create and destroy actions. The `only` option is used to limit the routes to just these two actions.
+
+`get :verify, on: :collection`: This line defines an additional route for the verify action in the SessionsController. The `on: :collection` option specifies that this action is a collection route, meaning it doesn't require an ID parameter.
 
 By defining these routes, Rails automatically generates several route helpers, including:
 
-`sessions_path`: This helper corresponds to the path for the create action, which is typically used for submitting a new session (logging in).
-`session_path(id)`: This helper corresponds to the path for the destroy action, which is typically used for logging out. It requires an id parameter.
-`verify_sessions_path`: This helper corresponds to the path for the verify action, which you defined as a collection route.
+- `sessions_path`: This helper corresponds to the path for the create action, which is typically used for submitting a new session (logging in).
+- `session_path(id)`: This helper corresponds to the path for the destroy action, which is typically used for logging out. It requires an id parameter.
+- `verify_sessions_path`: This helper corresponds to the path for the verify action, which you defined as a collection route.
 
-When you use <%= form_with(url: sessions_path) %> in your view, Rails knows to generate the correct URL for the create action of the SessionsController because you defined the resources :sessions routes.
-By properly defining the routes for your SessionsController, Rails can generate the necessary route helpers, including sessions_path, which resolves the undefined local variable or method 'sessions_path' error you were encountering.
+When you use `<%= form_with(url: sessions_path) %>` in your view, Rails knows to generate the correct URL for the create action of the SessionsController because you defined the `resources :sessions` routes.
 
-Now if we go to `127.0.0.1:3000/login`, we should see our login page.
+By properly defining the routes for your SessionsController, Rails can generate the necessary route helpers, including `sessions_path`, which resolves the undefined local variable or method 'sessions_path' error you were encountering.
+
+Now, if we go to `127.0.0.1:3000/login`, we should see our login page.
 
 ![Sign in](signin_page_for_authmagic.png)
 
-And now if we put an email and receive the verification link we should be logged in and redirected to the path for authenticated users.
+And now, if we enter an email and receive the verification link, we should be logged in and redirected to the path for authenticated users.
 
 ## Authorization and reading cookies
 
-For now, all our application is accessible by anyone by default. So our task for now is to restrict access to root_path and redirect user to login page until verification.
+For now, all our application is accessible by anyone by default. So our task for now is to restrict access to the `root_path` and redirect the user to the login page until verification.
 
-We need to know weather the user is authenticated or not. We can do it by checking the presence (or actually reading) of a session cookie. Navigate to ApplicationController and add the following code:
+We need to know whether the user is authenticated or not. We can do this by checking the presence (or actually reading) of a session cookie. Navigate to the ApplicationController and add the following code:
 
 ```ruby
+# controllers/application_controller.rb
+
 class ApplicationController < ActionController::Base
   before_action :authenticate
 
@@ -353,10 +361,9 @@ class Current < ActiveSupport::CurrentAttributes
   delegate :user, to: :session, allow_nil: true
 end
 ```
-By assigning the session_record to `Current.session` in ApplicationController, you're making that session object available throughout the application, thanks to the Current class you defined earlier.
-Since you also delegated the user method to the session attribute in the Current class (delegate :user, to: :session, allow_nil: true), you can now access the user associated with the current session by calling Current.user from anywhere in your application.
+By assigning the `session_record` to `Current.session` in ApplicationController, you're making that session object available throughout the application, thanks to the `Current` class you defined earlier. Since you also delegated the `user` method to the `session` attribute in the `Current` class (`delegate :user, to: :session, allow_nil: true`), you can now access the user associated with the current session by calling `Current.user` from anywhere in your application.
 
-One last thing is to add before_action where it is necessary:
+One last thing is to add `before_action` where it is necessary.
 
 ```ruby
 # controllers/home_controller.rb
@@ -367,7 +374,7 @@ class HomeController < ApplicationController
 end
 ```
 
-And we also need to skip before action where the authentication is required:
+And we also need to skip before_action where the authentication is required.
 
 ```ruby
 # controllers/sessions_controller.rb
@@ -378,14 +385,13 @@ class SessionsController < ApplicationController
 # rest of the code
 
 ```
-Now if we will reload our rails server and delete cookies and will try to access home page we will be redirected to login page. Once we log in we will be able to access home page.
+Now, if we reload our Rails server and delete cookies, then try to access the home page, we will be redirected to the login page. Once we log in, we will be able to access the home page.
 
-And the last part of this article will be the shortest one. How to log out from our app.
+The last part of this article will be the shortest one: how to log out from our app.
 
 ## Delete sessions and cookies
 
-We need to write our destroy method in our sessions_controller.
-
+To delete the session from the database and log out the user, we need to write our `destroy` method in our `sessions_controller`.
 ```ruby
 # controllers/sessions_controller.rb
 
@@ -396,9 +402,9 @@ We need to write our destroy method in our sessions_controller.
   end
 ```
 
-As we now have a Current helper now we know who is this current user and whose session we should destroy.
+As we now have a Current helper, we know who this current user is and whose session we should destroy.
 
-Now let's write a simple Logout button right in our index#home page.
+Now let's write a simple logout button right on our index#home page.
 
 ```ruby
 # views/home/index.html.erb
