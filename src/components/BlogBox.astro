@@ -1,9 +1,11 @@
 ---
 import { getCollection } from "astro:content";
 import { Image } from "astro:assets";
+import { sortBlogPostsByDate } from "@/utils/sortBlogPostsByDate.ts";
 
-const allBlogPosts = await getCollection("blog");
-const lastTwoBlogPosts = allBlogPosts.slice(0, 2).reverse();
+let allBlogPosts = await getCollection("blog");
+allBlogPosts = sortBlogPostsByDate(allBlogPosts);
+const lastTwoBlogPosts = allBlogPosts.slice(0, 2);
 ---
 
 <article class="flex flex-col gap-8">
