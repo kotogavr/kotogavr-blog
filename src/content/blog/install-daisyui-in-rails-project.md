@@ -11,4 +11,4 @@ relatedPosts:
   ]
 ---
 
-## Installing Tailwind CSS
+This blog post will appear after 15th of May!
