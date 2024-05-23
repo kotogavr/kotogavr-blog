@@ -1,67 +1,76 @@
 ---
 title: Best Workflow to Create a Ruby on Rails Project in VSCode
-description: How to setup Ruby on Rails project (gems, setup tricks)
-tags: ['Ruby on Rails']
-image: {src: './best-workflow-to-create-ruby-on-rails-project.png', alt: 'alt text'}
+description: A step-by-step guide for developers. Learn which essential gems to install in developer mode, how to set up user auth, and discover additional gems that enhance your Rails development experience. This comprehensive guide is designed to streamline your workflow and is my top reference for every new Rails project. Whether you're a beginner or an experienced developer, this post will help you optimize your Ruby on Rails projects in VSCode.
+tags: ["Ruby on Rails"]
+image:
+  {
+    src: "./best-workflow-to-create-ruby-on-rails-project.png",
+    alt: "alt text",
+  }
 publishDate: 21/04/2024
-relatedPosts: ['setting-up-devcontainer-for-ruby-on-rails', 'how-to-setup-google-login-with-ruby-on-rails']
+relatedPosts:
+  [
+    "setting-up-devcontainer-for-ruby-on-rails",
+    "how-to-setup-google-login-with-ruby-on-rails",
+  ]
 ---
 
-60% of success in any project lies in a good start, and it's often the trickiest part, isn't it? 
+60% of success in any project lies in a good start, and it's often the trickiest part, isn't it?
 In this post, I'll provide a step-by-step guide to setting up a Ruby on Rails project, including which gems to add and essential information to know about Ruby on Rails. I decided to create this blog post because, while attempting to bootstrap my RoR project following other guides, I observed that many developers recommend outdated tools and a cumbersome setup process. I appreciate simplicity and prefer scaling my app gradually. I hope you find this guide helpful. Let's get started!
+
 ## Why Ruby on Rails
 
-Ruby on Rails is an amazing, "batteries included" framework with a comprehensive ecosystem, similar to Laravel. Due to its ***opinionated*** nature, 
+Ruby on Rails is an amazing, "batteries included" framework with a comprehensive ecosystem, similar to Laravel. Due to its **_opinionated_** nature,
 you won't struggle with decisions like choosing gems or structuring your project.
-A significant difference is that Ruby on Rails is a ***monolith*** 
-framework, meaning it includes everything you need to build a web application. It boasts a built-in ORM, routing, templating engine, authentication, authorization, mailers, and background jobs. However, this convenience comes with a trade-off. Ruby on Rails lacks type checking, 
-so you'll need to acquaint yourself with ***duck typing 🦆***. It's not as flexible as the JavaScript ecosystem.
-
+A significant difference is that Ruby on Rails is a **_monolith_**
+framework, meaning it includes everything you need to build a web application. It boasts a built-in ORM, routing, templating engine, authentication, authorization, mailers, and background jobs. However, this convenience comes with a trade-off. Ruby on Rails lacks type checking,
+so you'll need to acquaint yourself with **_duck typing 🦆_**. It's not as flexible as the JavaScript ecosystem.
 
 There are things that I potentially love in RoR and why I think it's extremely smart framework:
 
-1. **Frontend Focus**: RoR streamlines backend development, 
-allowing developers to focus primarily on crafting user interfaces.
+1. **Frontend Focus**: RoR streamlines backend development,
+   allowing developers to focus primarily on crafting user interfaces.
 
-2. **Built-in WebSockets Support**: Action Cable provides seamless 
-support for WebSockets without the need for additional setup.
+2. **Built-in WebSockets Support**: Action Cable provides seamless
+   support for WebSockets without the need for additional setup.
 
-3. **Built-in REST API Support**: Active Model Serializers facilitate 
-built-in support for REST APIs.
+3. **Built-in REST API Support**: Active Model Serializers facilitate
+   built-in support for REST APIs.
 
-4. **Convention over Configuration**: The framework follows the 
-principle of letting conventions guide decisions, eliminating the need for developers to decide on project 
-structure, file placement, and naming conventions. This allows RoR to quickly scaffold components following common patterns.
+4. **Convention over Configuration**: The framework follows the
+   principle of letting conventions guide decisions, eliminating the need for developers to decide on project
+   structure, file placement, and naming conventions. This allows RoR to quickly scaffold components following common patterns.
 
-5. **CLI Installers for Gems**: Unlike the JS ecosystem, 
-RoR gems come with CLI installers and generators. 
-Instead of following a step-by-step guide for setting up a new library, 
-dealing with file creation, configurations, importing dependencies, and setting up related libraries, 
-RoR gems include all necessary code that integrates into your project upon installation. 
-To set up a Ruby on Rails project, you simply need to know which gems to use.
+5. **CLI Installers for Gems**: Unlike the JS ecosystem,
+   RoR gems come with CLI installers and generators.
+   Instead of following a step-by-step guide for setting up a new library,
+   dealing with file creation, configurations, importing dependencies, and setting up related libraries,
+   RoR gems include all necessary code that integrates into your project upon installation.
+   To set up a Ruby on Rails project, you simply need to know which gems to use.
 
 This was just a preamble and some observations. Now, let's dive in!
 
 ## Create new project
 
->For this guide, I assume you already know how to 
-set up Ruby and Ruby and Rails on your machine. I strongly recommend starting any 
-development process in a container environment. To set up your container 
-properly, I have written a separate blogpost: [**Setting up a devcontainer in VSCode for Ruby on Rails development**](/blog/setting-up-devcontainer-for-ruby-on-rails)
+> For this guide, I assume you already know how to
+> set up Ruby and Ruby and Rails on your machine. I strongly recommend starting any
+> development process in a container environment. To set up your container
+> properly, I have written a separate blogpost: [**Setting up a devcontainer in VSCode for Ruby on Rails development**](/blog/setting-up-devcontainer-for-ruby-on-rails)
 
 Now we are going to configure our new RoR project using the following gems:
+
 - rubocop
 - solargraph
 - annotate
 - erb-formatter
 
 And I'll also share some additional gems and setup tricks:
+
 - auth: authentication-zero
 - social login: omniauth-google-oauth2
 - credentials setup
 - erb alternative: phlex
 - database: SQLite3
-
 
 Let's start with creating new very simple, minimalistic project. Feel free to remove or add any options:
 
@@ -70,103 +79,113 @@ rails new [my-project] -c tailwind -d postgresql -J -T -a propshaft --skip-jbuil
 ```
 
 #### -c
-Sometimes I use Tailwind CSS as a CSS framework, so I 
-add the `-c tailwind` option to use it out of the box. 
-Of course, you can add Tailwind at any time later, but this way, 
+
+Sometimes I use Tailwind CSS as a CSS framework, so I
+add the `-c tailwind` option to use it out of the box.
+Of course, you can add Tailwind at any time later, but this way,
 you will have a designed UI from the very beginning.
 
 #### -d
-You can add PostgreSQL as a database, as in the example `-d postgresql`. 
+
+You can add PostgreSQL as a database, as in the example `-d postgresql`.
 However, I personally prefer to use SQLite3 for production because it's lightweight and simple to use.
-The **SQLite3 database** is the default database used when a new Ruby 
-on Rails application is created. This can be changed using the `-d` 
-or `--database` option with allowed values: `mysql`, `oracle`, 
-`postgresql`, `sqlite3`, `frontbase`, `ibm_db`, `sqlserver`, 
-`jdbcmysql`, `jdbcsqlite3`, `jdbcpostgresql`, `jdbc`. 
+The **SQLite3 database** is the default database used when a new Ruby
+on Rails application is created. This can be changed using the `-d`
+or `--database` option with allowed values: `mysql`, `oracle`,
+`postgresql`, `sqlite3`, `frontbase`, `ibm_db`, `sqlserver`,
+`jdbcmysql`, `jdbcsqlite3`, `jdbcpostgresql`, `jdbc`.
 
 ### -J
+
 This option avoid JavaScript installation completely in your project. If you need JS instead, feel free to remove this `-J` now.
 
 ### -T
-**T** stands for 'skip tests'. If you decide later that you want to add tests to your project, you can do so manually
- by adding the necessary testing gems to your Gemfile and generating the test files 
- using Rails generators or other testing frameworks like RSpec or Minitest.
 
- ### -a
-**-a** stands for asset pipeline and specifies that you want to use `propshaft` as the asset pipeline for your 
-Rails application. Propshaft is a new asset pipeline introduced in Rails 7, designed to replace the older 
-`Sprockets-based` asset pipeline. This change aims to improve the performance and flexibility of 
-asset handling in Rails applications. So, for now, old Sprockets is the default option, and before Propshaft replaces 
+**T** stands for 'skip tests'. If you decide later that you want to add tests to your project, you can do so manually
+by adding the necessary testing gems to your Gemfile and generating the test files
+using Rails generators or other testing frameworks like RSpec or Minitest.
+
+### -a
+
+**-a** stands for asset pipeline and specifies that you want to use `propshaft` as the asset pipeline for your
+Rails application. Propshaft is a new asset pipeline introduced in Rails 7, designed to replace the older
+`Sprockets-based` asset pipeline. This change aims to improve the performance and flexibility of
+asset handling in Rails applications. So, for now, old Sprockets is the default option, and before Propshaft replaces
 it, we'll need to add this option manually every time we create a new project.
 
 When you use the -a propshaft option, Rails will configure your project to use Propshaft for managing assets. This includes:
 
-**Asset Compilation**: Propshaft will compile your assets (CSS, JavaScript, images, etc.) in a more efficient 
+**Asset Compilation**: Propshaft will compile your assets (CSS, JavaScript, images, etc.) in a more efficient
 manner compared to Sprockets.
 
-**Asset Preprocessing**: It supports modern asset preprocessing tools and techniques, allowing for more streamlined 
+**Asset Preprocessing**: It supports modern asset preprocessing tools and techniques, allowing for more streamlined
 development workflows.
 
-**Improved Performance**: By leveraging modern web standards and optimizations, Propshaft aims to offer better 
+**Improved Performance**: By leveraging modern web standards and optimizations, Propshaft aims to offer better
 performance for asset delivery in Rails applications.
 
 ### extras
-The `--skip-jbuilder` option will skip the installation of the Jbuilder gem. 
+
+The `--skip-jbuilder` option will skip the installation of the Jbuilder gem.
 Jbuilder is a templating engine for JSON, primarily used for crafting complex REST APIs, which I personally don't make.
 But once needed, you can add it later to your RoR app.
 
-The `--skip-action-mailbox` option will skip the installation of the Action Mailbox gem in your new project. 
-Action Mailbox is a framework for routing incoming emails to controller-like mailboxes in a Rails application. 
-So, you will *still* have a mailbox in your application to send emails, but you won't be able to receive them. 
-I don't think this is such a necessary thing to have now, so I normally skip this too, and later you can always 
+The `--skip-action-mailbox` option will skip the installation of the Action Mailbox gem in your new project.
+Action Mailbox is a framework for routing incoming emails to controller-like mailboxes in a Rails application.
+So, you will _still_ have a mailbox in your application to send emails, but you won't be able to receive them.
+I don't think this is such a necessary thing to have now, so I normally skip this too, and later you can always
 install the Action Mailer gem.
 
-> You can also check commands on RoR guides at 
-https://guides.rubyonrails.org/command_line.html or simply call 
-`rails new -h` to see all available options.
+> You can also check commands on RoR guides at
+> https://guides.rubyonrails.org/command_line.html or simply call
+> `rails new -h` to see all available options.
 
-###  
-
+###
 
 ### Rubocop
-RuboCop is a static code analyzer that helps to keep your code clean and consistent. 
-Add the [RuboCop gem](https://github.com/rubocop/rubocop) by 
+
+RuboCop is a static code analyzer that helps to keep your code clean and consistent.
+Add the [RuboCop gem](https://github.com/rubocop/rubocop) by
 including it in the Gemfile within the **Development group**:
+
 ```ruby
 gem 'rubocop', require: false
 ```
 
-Add [rubocop-rails](https://github.com/rubocop/rubocop-rails) to the Gemfile too: 
+Add [rubocop-rails](https://github.com/rubocop/rubocop-rails) to the Gemfile too:
+
 ```ruby
 gem 'rubocop-rails', require: false
 ```
+
 After that run bundle command:
 
 ```bash
 bundle
 ```
 
-To activate RuboCop, create a file named `.rubocop.yml` in 
+To activate RuboCop, create a file named `.rubocop.yml` in
 the root folder and add the following at the top: `require: rubocop-rails`.
 
-Install the [Ruby LSP](https://marketplace.visualstudio.com/items?itemname=shopify.ruby-lsp) 
-extension for VSCode to enable RuboCop integration. 
+Install the [Ruby LSP](https://marketplace.visualstudio.com/items?itemname=shopify.ruby-lsp)
+extension for VSCode to enable RuboCop integration.
 This is the only gem that highlights your Ruby code.
 
 ### Solargraph
-Solargraph is a language server for Ruby, 
-offering features such as intellisense, code completion, 
-and documentation. 
 
-Following the analogy with RuboCop, 
-add [solargraph](https://github.com/castwide/solargraph) 
-and [solargraph-rails](https://github.com/iftheshoefritz/solargraph-rails/) 
+Solargraph is a language server for Ruby,
+offering features such as intellisense, code completion,
+and documentation.
+
+Following the analogy with RuboCop,
+add [solargraph](https://github.com/castwide/solargraph)
+and [solargraph-rails](https://github.com/iftheshoefritz/solargraph-rails/)
 to your Gemfile within the **Development group**:
+
 ```ruby
 gem 'solargraph', require: false
 gem 'solargraph-rails', require: false
 ```
-
 
 Install the [Ruby Solargraph](https://marketplace.visualstudio.com/items?itemName=castwide.solargraph) extension.
 
@@ -176,9 +195,10 @@ Run bundle command:
 bundle
 ```
 
-To activate the extension, run `solargraph config` to generate 
-.solargraph.yml. Add the following lines to this file to instruct your 
+To activate the extension, run `solargraph config` to generate
+.solargraph.yml. Add the following lines to this file to instruct your
 IDE plugin to use solargraph-rails:
+
 ```yaml
 plugins:
   - solargraph-rails
@@ -186,9 +206,10 @@ plugins:
 
 ### Annotate
 
-Annotate is incredibly helpful for generating schemas for existing models. 
-Add [Annotate (aka AnnotateModels)](https://github.com/ctran/annotate_models) 
+Annotate is incredibly helpful for generating schemas for existing models.
+Add [Annotate (aka AnnotateModels)](https://github.com/ctran/annotate_models)
 to your Gemfile within the **Development group**:
+
 ```ruby
 gem 'annotate'
 ```
@@ -205,12 +226,14 @@ Run this command to generate shemas for all models (or do it later ones you have
 annotate --models
 ```
 
->Note❗️ Annotate depends on solargraph and cannot work without it.
+> Note❗️ Annotate depends on solargraph and cannot work without it.
 
 ### Erb formatter
-Erb formatter is a gem that helps to format your erb templates. 
+
+Erb formatter is a gem that helps to format your erb templates.
 
 Add erb-formatter to your Gemfile to the **Development group**:
+
 ```ruby
  gem 'erb-formatter', require: false
 ```
@@ -219,17 +242,17 @@ Run bundle command:
 
 ```bash
 bundle
-``` 
+```
 
 Install the [Erb formatter](https://marketplace.visualstudio.com/items?itemName=elia.erb-formatter) extension.
 
-.erb format is the default templating engine in Ruby on Rails. 
-If you've just started with RoR, I recommend sticking with erb because 
-it's the default templating engine, and you'll find more examples and 
-tutorials on how to use it. For more advanced users, I recommend an 
+.erb format is the default templating engine in Ruby on Rails.
+If you've just started with RoR, I recommend sticking with erb because
+it's the default templating engine, and you'll find more examples and
+tutorials on how to use it. For more advanced users, I recommend an
 alternative called Phlex, but we will discuss it later in this post.
 
-This concludes the section on developer gems. Finally, you Gemfile should look 
+This concludes the section on developer gems. Finally, you Gemfile should look
 something like this:
 
 ```ruby
@@ -316,25 +339,27 @@ gem 'omniauth'
 gem 'omniauth-rails_csrf_protection'
 ```
 
-Now, 
+Now,
 let's delve into some additional gems and setup tricks.
+
 ## Setting up authentication
 
-There are different approaches to authenticate users, with email login 
-being the most common. Personally, I prefer Google or social login, 
-especially for SaaS applications where preventing the exploitation of 
-free trials is crucial. From my perspective, using Google login is not 
+There are different approaches to authenticate users, with email login
+being the most common. Personally, I prefer Google or social login,
+especially for SaaS applications where preventing the exploitation of
+free trials is crucial. From my perspective, using Google login is not
 only convenient but also more secure.
 
-A reasonable alternative could be a passwordless or "magic link" login, 
-where no password is created, and a login link is sent to the email 
-whenever authentication is needed. However, this approach is a bit more 
+A reasonable alternative could be a passwordless or "magic link" login,
+where no password is created, and a login link is sent to the email
+whenever authentication is needed. However, this approach is a bit more
 complex to implement. Personally, I stick to Google login.
+
 ### Authentication-zero
 
-For this specific task, I use the 'authentication-zero' gem. It's a 
-simple and lightweight gem that enables login with email, Google, 
-Facebook, and various other methods. It serves as a good alternative 
+For this specific task, I use the 'authentication-zero' gem. It's a
+simple and lightweight gem that enables login with email, Google,
+Facebook, and various other methods. It serves as a good alternative
 to the Devise gem, which, in my opinion, appears a bit outdated.
 
 Add [authentication-zero](https://github.com/lazaronixon/authentication-zero) to your Gemfile.
@@ -349,8 +374,7 @@ Don't forget to run bundle command:
 bundle
 ```
 
-Then run command in terminal to setup authentication-zero with [omniauth](https://github.com/omniauth/omniauth) gem: 
-
+Then run command in terminal to setup authentication-zero with [omniauth](https://github.com/omniauth/omniauth) gem:
 
 ```ruby
 rails g authentication --omniauthable
@@ -358,7 +382,6 @@ rails g authentication --omniauthable
 
 Now as we have authentication setup, we need to add Google login.
 For this we need to add [omniauth-google-oauth2](https://github.com/zquestz/omniauth-google-oauth2)
-
 
 ```ruby
 gem 'omniauth-google-oauth2'
@@ -368,11 +391,11 @@ To set up Google login, we need to add credentials to our project. Below is how 
 
 ### Credentials setup
 
-Credentials is a new way to store secrets in Ruby on Rails, and it 
-offers a popular and convenient method that's already implemented in 
+Credentials is a new way to store secrets in Ruby on Rails, and it
+offers a popular and convenient method that's already implemented in
 RoR using a master key.
 
-Firstly, you need to run this command in the terminal if you use VSCode: 
+Firstly, you need to run this command in the terminal if you use VSCode:
 
 ```bash
 EDITOR="code --wait" rails credentials:edit
@@ -383,7 +406,6 @@ Your IDE will open a new document that looks like this:
 
 Instead of the AWS example, we will add our Google credentials.
 
-
 ```yml
 google:
   client_id: dmsdjn294wkin46nlose343k676frfg56f3r5gv566n.apps.googleusercontent.com
@@ -391,10 +413,11 @@ google:
 ```
 
 Now close this file and you will see in terminal:
-  
-  ```bash
-  File encrypted and saved.
-  ```
+
+```bash
+File encrypted and saved.
+```
+
 This means that everything is set up correctly and you have the master key.
 
 Now let's open `config/initializers/omniauth.rb` and add this code:
@@ -404,9 +427,10 @@ Rails.application.config.middleware.use(OmniAuth::Builder) do
   provider :google_oauth2, Rails.application.credentials.dig(:google, :client_id), Rails.application.credentials.dig(:google, :client_secret)
 end
 ```
+
 We use the `dig` method to retrieve credentials from the credentials.yml.enc file, and using 'dig' is preferred over using the `[]` method.
 
-Now let's start the server and check if everything is working. 
+Now let's start the server and check if everything is working.
 First of all, you will see pending migrations from the authentication-zero gem.
 ![pending migrations](./pending_migrations.png)
 
@@ -416,6 +440,7 @@ After running pending migrations, you will see the following:
 Sign is with OmniAuth is missing now. Let's replace it with Google login.
 
 Open `app > views > sessions > new.html.erb` file and replace 'Sigin in with OmniAuth' with this code:
+
 ```erb
 <%= link_to "Sign in with Google", '/auth/google_oauth2', method: :post, data: { turbo: false } %>
 ```
@@ -456,11 +481,13 @@ Rails.application.routes.draw do
   # root "posts#index"
 end
 ```
-The above routes were added by Authentication Zero during the code 
+
+The above routes were added by Authentication Zero during the code
 generation step above.
 
-Now, you are pretty much done with the setup. You can run your project 
+Now, you are pretty much done with the setup. You can run your project
 and try to log in with Google.
+
 ## Run models generator
 
 The first step that follows the setup is to generate models.
@@ -470,10 +497,13 @@ rails g model Comment commenter:string body:text article:references
 ```
 
 To create scaffolds for CRUD tasks, use the following command, adding any necessary model names and attributes:
+
 ```bash
 rails generate scaffold ModelName attribute1:type attribute2:type
 ```
+
 For example, if you want to create a Post model with title as a string and content as text, you would run:
+
 ```bash
 rails g scaffold Tasks text finished:boolean author:references
 ```
@@ -482,11 +512,11 @@ Note that text is equivalent to text:string since string is the default type if 
 
 ## Phlex
 
-Phlex is an alternative to the erb templating engine. It is a bit more advanced and has 
-more features than erb. While it serves as a good alternative, I recommend using it only if 
+Phlex is an alternative to the erb templating engine. It is a bit more advanced and has
+more features than erb. While it serves as a good alternative, I recommend using it only if
 you are already familiar with erb and want to try something new.
 
-The main reason I use Phlex is that it has a better syntax for loops and conditions. 
+The main reason I use Phlex is that it has a better syntax for loops and conditions.
 Phlex allows you to write pure Ruby code inside templates, which is not possible with erb.
 
 For example, this is how you write a loop in erb:
@@ -506,6 +536,7 @@ end
 ```
 
 To add Phlex to your project add [phlex](https://www.phlex.fun/rails/) to Gemfile:
+
 ```ruby
 gem 'phlex-rails'
 ```
@@ -517,19 +548,20 @@ bundle
 ```
 
 Once the gem is installed, run the install generator.
-  
-  ```bash
-  rails g phlex:install
-  ```
-Now, you can rename your `.html.erb` files to `.rb` files and use Phlex instead of erb. 
+
+```bash
+rails g phlex:install
+```
+
+Now, you can rename your `.html.erb` files to `.rb` files and use Phlex instead of erb.
 If you have .erb files in your project, you can use [https://phlexing.fun/](https://phlexing.fun/) to convert erb to rb or you can simply have both erb and rb files in your project.
 
 ## Conclusion
 
-In this post, I've guided you through setting up a Ruby on Rails project, 
-highlighting the essential gems to add and key aspects to know about Ruby on Rails. 
-I didn't cover Docker setup in this post, as they each warrant a 
-separate discussion. However, the general idea is that with a clean setup, you can 
-build robust applications with Ruby on Rails. 
+In this post, I've guided you through setting up a Ruby on Rails project,
+highlighting the essential gems to add and key aspects to know about Ruby on Rails.
+I didn't cover Docker setup in this post, as they each warrant a
+separate discussion. However, the general idea is that with a clean setup, you can
+build robust applications with Ruby on Rails.
 
 Thank you for reading! If you have any questions or need further assistance, feel free to ask.
