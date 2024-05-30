@@ -64,7 +64,7 @@ Create `Procfile` file in root directory and add the following:
 ```bash
 
 web: bin/rails server -p 3000
-css: bin/rails unocss:dev
+css: bin/rake unocss:dev
 ```
 
 Your UnoCSS should work as expected if you run Foreman (or Hivemind). You can also set up a config file to add custom instructions. Create `uno.config.js` (even if you don't have JS installed in your Rails project) and add your custom instructions as shown in the example below:
