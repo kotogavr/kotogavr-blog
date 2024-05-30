@@ -35,9 +35,9 @@ namespace :unocss do
     run_unocss('-w')
   end
 
-end
   task build: :environment do
     run_unocss('-m')
+  end
 
   def run_unocss(extra_args = '')
     system(
