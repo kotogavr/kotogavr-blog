@@ -133,7 +133,7 @@ class SessionsController < ApplicationController
   def create
     user = User.find_or_create_by(email: params[:email])
     # TODO: Add send email logic
-    redirect_to login_path, notice "Check your email for a link to sign in"
+    redirect_to login_path, notice: "Check your email for a link to sign in"
   end
 
   def verify
