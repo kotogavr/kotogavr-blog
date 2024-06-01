@@ -263,6 +263,13 @@ Rails.application.routes.draw do
 end
 ```
 
+And the last thing we have to setup is :host parameter in `config/environments/development.rb` and in the future specify the host in `config/environments/production.rb`:
+
+```ruby
+Rails.application.routes.default_url_options[:host] = 'localhost:3000'
+
+```
+
 So here we should stop and think... as we've basically created an authentication system with email, it should work, and we can check it somehow. The last thing is to create a view with the basic auth form:
 
 ```erb
