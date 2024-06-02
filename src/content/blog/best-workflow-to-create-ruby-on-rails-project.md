@@ -165,7 +165,48 @@ bundle
 ```
 
 To activate RuboCop, create a file named `.rubocop.yml` in
-the root folder and add the following at the top: `require: rubocop-rails`.
+the root folder and add the following config (or you can setup your own rules, this is just my config I use regularly):
+
+```yml
+require:
+  - rubocop-rails
+
+AllCops:
+  NewCops: enable
+
+Layout/LineLength:
+  Enabled: false
+
+Metrics/AbcSize:
+  Enabled: false
+
+Metrics/BlockLength:
+  Enabled: false
+
+Metrics/ClassLength:
+  Enabled: false
+
+Metrics/MethodLength:
+  Enabled: false
+
+Rails/I18nLocaleTexts:
+  Enabled: false
+
+Rails/OutputSafety:
+  Enabled: false
+
+Lint/MissingSuper:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  SafeAutoCorrect: true
+
+Style/MethodCallWithArgsParentheses:
+  Enabled: true
+```
 
 Install the [Ruby LSP](https://marketplace.visualstudio.com/items?itemname=shopify.ruby-lsp)
 extension for VSCode to enable RuboCop integration.
