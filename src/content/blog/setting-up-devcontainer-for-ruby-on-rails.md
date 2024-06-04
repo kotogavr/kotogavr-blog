@@ -7,7 +7,7 @@ image:
     src: "./setting-up-devcontainer-for-ruby-on-rails.png",
     alt: "Setting up a devcontainer for Ruby on Rails development",
   }
-publishDate: "27/01/2024"
+publishDate: 27/01/2024
 relatedPosts: ["best-workflow-to-create-ruby-on-rails-project"]
 ---
 

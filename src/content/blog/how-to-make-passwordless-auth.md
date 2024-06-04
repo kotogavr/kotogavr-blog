@@ -9,7 +9,7 @@ relatedPosts: ["setting-up-devcontainer-for-ruby-on-rails"]
 
 ## Intro
 
-I find passwordless authentication to be a better alternative to normal authentication with login and password because it really annoys me every time to generate and save a new password. So I am always looking for better alternatives. For example, social authentication. I wrote about it [here](blog/how-to-setup-google-login-with-ruby-on-rails).
+I find passwordless authentication to be a better alternative to normal authentication with login and password because it really annoys me every time to generate and save a new password. So I am always looking for better alternatives. For example, social authentication. I wrote about it [here](how-to-setup-google-login-with-ruby-on-rails).
 
 This particular method is another way to request registration via email, inspired by the [**authentication-zero library**](https://github.com/lazaronixon/authentication-zero/), but I've made it simpler and more straightforward.
 

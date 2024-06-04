@@ -7,7 +7,7 @@ image:
     src: "./best-workflow-to-create-ruby-on-rails-project.png",
     alt: "alt text",
   }
-publishDate: 21/04/2024
+publishDate: 03/06/2024
 relatedPosts:
   [
     "setting-up-devcontainer-for-ruby-on-rails",
