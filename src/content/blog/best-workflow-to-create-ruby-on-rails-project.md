@@ -7,7 +7,7 @@ image:
     src: "./best-workflow-to-create-ruby-on-rails-project.png",
     alt: "alt text",
   }
-publishDate: 03/06/2024
+publishDate: 05/06/2024
 relatedPosts:
   [
     "setting-up-devcontainer-for-ruby-on-rails",
@@ -592,6 +592,16 @@ Once the gem is installed, run the install generator.
 
 ```bash
 rails g phlex:install
+```
+
+Make sure you're using only one layout which is `app/views/layouts/application_layout.rb` and delete `app/views/layouts/application.html.erb`. Then add layout in ApplicationController otherwise it won't work:
+
+```ruby
+# app/controllers/application_controller
+
+class ApplicationController < ActionController::Base
+  layout -> { ApplicationLayout }
+end
 ```
 
 Now, you can rename your `.html.erb` files to `.rb` files and use Phlex instead of erb.
