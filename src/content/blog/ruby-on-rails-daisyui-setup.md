@@ -1,9 +1,9 @@
 ---
-title: Ruby on Rails DaisyUI Setup Without JS. The Most Elegant Way
+title: "Ruby on Rails DaisyUI Setup Without JS. The Most Elegant Way. Bonus: icons"
 description: Easily set up DaisyUI in your Rails project with my guide. Perfect for those who want to avoid unnecessary Node.js packages and maintain a clean interface written in Ruby. No need to install JavaScript at all. Enjoy a streamlined, efficient setup without the bloat.
 tags: ["Ruby on Rails"]
 image: { src: "./ruby-on-rails-daisyui-setup.png", alt: "alt text" }
-publishDate: 04/06/2024
+publishDate: 05/06/2024
 relatedPosts:
   [
     "install-unocss-in-rails-project",
@@ -86,4 +86,95 @@ Now rename `application.css` to `application.tailwind.css` and add the following
 @import "tailwindcss/utilities";
 ```
 
-Now you can run our server to see
+Now you can fix your view and run the server to see changes.
+
+## DaisyUI Setup
+
+Run setup using this command with bun or npm:
+
+```bash
+npm i -D daisyui@latest
+
+# or
+
+bun add -D daisyui@latest
+```
+
+In `tailwind.config.js` add DaisyUI config:
+
+```js
+module.exports = {
+  //...
+  plugins: [require("daisyui")],
+};
+```
+
+In order make it work we need to upgrade our rake task:
+
+```ruby
+# lib/tasks/tailwindcss.rake
+
+# ...
+     extra_args
+    )
+  end
+end
+
+Rake::Task['assets:precompile'].enhance(['tailwindcss:build'])
+
+```
+
+Now, experiment with DaisyUI classes and themes to ensure everything works well.
+
+## Icons Setup
+
+I'll use [iconify sets](https://icon-sets.iconify.design/), which offer a wide range of icons and packs, including animated, social, colorful, and more.
+
+There's a [plugin](https://github.com/iconify/iconify/tree/main/plugins/tailwind) for Tailwind CSS that enables streamlined Iconify integration.
+
+First, we install the plugin using `npm` / `bun`:
+
+```bash
+npm i -D @iconify/tailwind
+
+# or
+
+bun add @iconify/tailwind
+```
+
+In tailwind.config.js we add:
+
+```js
+//tailwind.config.js
+
+//...
+ plugins: [
+    require("@iconify/tailwind").addDynamicIconSelectors(),
+//...
+```
+
+You can read how to use [addDynamicIconSelectors() here](https://iconify.design/docs/usage/css/tailwind/dynamic/).
+
+Next, we'll download the required icon set. For this example, I'll download the Iconamoon icons. You can choose any set from the [ iconify sets ](https://icon-sets.iconify.design/) by running a similar command: @iconify-json/[iconify set]. For instance, to get Iconamoon, I'll use this command:
+
+```bash
+npm i -D @iconify-json/iconamoon
+
+#or
+
+bun add @iconify-json/iconamoon
+```
+
+Syntax of class names is this: `icon-[{prefix}--{name}]`, where `{prefix}` is icon set prefix (iconamoon in my case), `{name}` is icon name.
+
+```html
+<span class="icon-[ph--alarm-duotone] text-2xl"></span>
+<span class="icon-[fluent-emoji-flat--alarm-clock] text-sm"></span>
+<span class="icon-[carbon--edit-off]"></span>
+```
+
+But, again, check [docs](https://iconify.design/docs/usage/css/tailwind/dynamic/) for references.
+
+That's it! Run foreman or hivemind to test it out.
+
+Happy coding!
