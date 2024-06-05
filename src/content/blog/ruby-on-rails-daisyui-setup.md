@@ -1,5 +1,5 @@
 ---
-title: "Ruby on Rails DaisyUI Setup Without JS. The Most Elegant Way. Bonus: icons"
+title: "Ruby on Rails DaisyUI Setup. The Most Elegant Way. Bonus: icons"
 description: Easily set up DaisyUI in your Rails project with my guide. Perfect for those who want to avoid unnecessary Node.js packages and maintain a clean interface written in Ruby. No need to install JavaScript at all. Enjoy a streamlined, efficient setup without the bloat.
 tags: ["Ruby on Rails"]
 image: { src: "./ruby-on-rails-daisyui-setup.png", alt: "alt text" }
